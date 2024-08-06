@@ -14,6 +14,7 @@ class Vehicle:
         self._name = name
         self._capacity = capacity
         self._range = range
+        self._initial_range = range  # To reset range Kristin added it
 
         self._id_truck = Vehicle.id_vehicle
         Vehicle.id_vehicle += 1
