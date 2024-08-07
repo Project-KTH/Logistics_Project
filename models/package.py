@@ -1,10 +1,14 @@
+from location import Location
+
+
 class Package:
-    def __init__(self, id: str, start_location, end_location, weight: float, customer_info: dict):
+    def __init__(self, id: str, start_location, end_location, weight: float, customer_info: str):
         self.validate_id(id)
         self._start_location = start_location
         self._end_location = end_location
         self.weight = weight
         self.customer_info = customer_info
+        self.distance = self.calculate_distance()
         
     def validate_id(self, value):
         if not value.isalnum():
@@ -42,8 +46,6 @@ class Package:
             raise ValueError('Weight must be a number')
         elif value <= 0:
             raise ValueError('Weight cannot be 0 or less')
-        elif value > 1000:
-            raise ValueError('Weight cannot more than 1000')
         else:
             self._weight = value
 
@@ -58,3 +60,15 @@ class Package:
         else:
             self._customer_info = value
 
+    # def calculate_distance(self):
+    #     distance = self.start_location.get_distance_to(self.end_location.name)
+    #     return distance
+
+    def __str__(self) -> str:
+        return (
+            f'Package N: {self.id}\n'
+            f'Weight: {self.weight}'
+            f'From: {self.start_location}'
+            f'To: {self.end_location}'
+            f'Customer: {self.customer_info}'
+        )
