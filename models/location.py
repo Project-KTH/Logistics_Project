@@ -1,20 +1,15 @@
 from constants.location_constants import Cities
 
 class Location:
-    def __init__(self, city: Cities):
-        self.validate_name(city)
-        
-    
-    def validate_name(self, value):
-        if not any(char.isalpha() for char in value):
-            raise ValueError('Location name cannot contain any digits or symbols')
-        elif not isinstance(value, Cities):
-            raise ValueError('No office at this location')
-        else:
-            self._city = value
+
+
+    def __init__(self, name: str):
+        self._name = Cities.from_string(name)
+        self._distances = Cities.distances
 
     @property
-    def city(self):
-        return self._city
+    def name(self):
+        return self._name
 
-        
+    def get_distance_to(self, other_city: str):
+        return self._distances[self._name][other_city]
