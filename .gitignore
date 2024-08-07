@@ -1,0 +1,4 @@
+**/__pycache__/
+# Other ignores
+*.pyc
+*.pyo
