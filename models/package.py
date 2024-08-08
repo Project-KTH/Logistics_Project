@@ -2,8 +2,8 @@ from location import Location
 
 
 class Package:
-    def __init__(self, id: str, start_location, end_location, weight: float, customer_info: str):
-        self.validate_id(id)
+    def __init__(self, package_id: str, start_location, end_location, weight: float, customer_info: str):
+        self.validate_id(package_id)
         self._start_location = start_location
         self._end_location = end_location
         self.weight = weight
@@ -20,11 +20,11 @@ class Package:
         elif len(value) < 3:
             raise ValueError('Package ID should be at least 3 characters long')
         else:
-            self._id = value
+            self._package_id = value
 
     @property
     def id(self):
-        return self._id
+        return self._package_id
 
     @property
     def start_location(self):
