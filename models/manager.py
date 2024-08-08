@@ -2,7 +2,7 @@ from models.route import Route
 from models.package import Package
 from models.user import User
 from models.vehicle import Vehicle
-
+from datetime import datetime
 
 class Manager(User):
     def __init__(self, user_id, name, contact_info, application_data, access_level='basic'):
@@ -54,7 +54,7 @@ class Manager(User):
         if truck and route:
             if truck.current_status == "Free" and truck.current_location == route.locations[0]:
                 route.truck = truck
-                truck.assign_route(*route.locations)
+                truck.assign_route(route.locations)
                 print(f"Truck {truck_id} assigned to route {route_id}.")
             else:
                 print("Truck not available or not at the starting location of the route.")

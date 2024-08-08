@@ -1,7 +1,7 @@
 from datetime import timedelta, datetime
-from helpers.functions import get_distance
+from helpers.functions import get_distance, distances
 from models.vehicle import Vehicle
-from helpers import distances
+
 
 class Route:
     def __init__(self, route_id, locations, departure_time):
@@ -48,9 +48,9 @@ class Route:
         arrival_times = self.calculate_arrival_times()
         stops_with_times = ', '.join(f"{loc} ({time.strftime('%Y-%m-%d %H:%M')})" for loc, time in zip(self.locations, arrival_times))
         return f"Route ID: {self.route_id}, Locations: {stops_with_times}, Truck ID: {self.truck.id_truck if self.truck else 'No truck assigned'}"
-    
+
     def __len__(self):
         try:
-            return distances.distances[self.locations[0]].get(self.locations[-1]) 
-        except Exception: 
+            return distances[self.locations[0]].get(self.locations[-1])
+        except Exception:
             raise ValueError('Provide distance from the list: ("SYD", "MEL", "ADL", "ASP", "BRI", "DAR", "PER")')

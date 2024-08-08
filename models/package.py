@@ -1,4 +1,4 @@
-from location import Location
+from models.location import Location
 
 
 class Package:
