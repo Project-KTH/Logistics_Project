@@ -1,5 +1,10 @@
 from datetime import timedelta, datetime, date
 from helpers import distances
+# vehicle.py
+
+from helpers.linked_list import LinkedList
+
+
 class Vehicle:
 
     id_vehicle = 1001
@@ -10,7 +15,6 @@ class Vehicle:
         "Man": {"units": 15, "name": "Man", "capacity": 37_000, "range": 10_000},
         "Actros": {"units": 15, "name": "Actros", "capacity": 26_000, "range": 13_000},
     }
-    # Vehicle_park could be in another class like Inventory if needed.
 
     def __init__(self, name, capacity, range):
         self._name = name
@@ -29,15 +33,15 @@ class Vehicle:
     @property
     def name(self):
         return self._name
-    
+
     @property
     def id_truck(self):
         return self._id_truck
-    
+
     @property
     def capacity(self):
         return self._capacity
-    
+
     @property
     def range(self):
         return self._range
@@ -189,18 +193,18 @@ class Vehicle:
 
     def update_capacity(self, package_weight: float):
         if package_weight <= 0:
-            raise ValueError("Package weight is expected to be positive value")
+            raise ValueError("Package weight is expected to be a positive value")
         if package_weight > self._capacity:
             raise ValueError(f"Free capacity of vehicle: {self.capacity:_}kg can't load {package_weight:_}kg")
-        
+
         self._capacity = self._capacity - package_weight
-    
+
     def update_range(self, distance):
         if distance <= 0:
-            raise ValueError("Distance is expected to be positive value")
+            raise ValueError("Distance is expected to be a positive value")
         if distance > self._range:
             raise ValueError(f"Remaining range is not enough for distance {distance} km")
-        
+
         self._range -= distance
     
     # def change_status(self):

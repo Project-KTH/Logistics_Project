@@ -1,13 +1,13 @@
-from location import Location
+from models.location import Location
 
 
 class Package:
-    def __init__(self, id: str, start_location, end_location, weight: float, customer_info: str):
-        self.validate_id(id)
+    def __init__(self, package_id: str, start_location, end_location, weight: float, contact_info: str):
+        self.validate_id(package_id)
         self._start_location = start_location
         self._end_location = end_location
         self.weight = weight
-        self.customer_info = customer_info
+        self.customer_info = contact_info
         self.distance = self.calculate_distance()
         
     def validate_id(self, value):
@@ -20,11 +20,11 @@ class Package:
         elif len(value) < 3:
             raise ValueError('Package ID should be at least 3 characters long')
         else:
-            self._id = value
+            self._package_id = value
 
     @property
     def id(self):
-        return self._id
+        return self._package_id
 
     @property
     def start_location(self):
@@ -50,15 +50,12 @@ class Package:
             self._weight = value
 
     @property
-    def customer_info(self):
-        return self._customer_info
+    def contact_info(self):
+        return self._contact_info
     
-    @customer_info.setter
-    def customer_info(self, value):
-        if not isinstance(value, dict):
-            raise ValueError('Customer info must be a dictionary')
-        else:
-            self._customer_info = value
+    @contact_info.setter
+    def contact_info(self, value):
+        self._contact_info = value
 
     # def calculate_distance(self):
     #     distance = self.start_location.get_distance_to(self.end_location.name)
