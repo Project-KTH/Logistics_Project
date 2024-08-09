@@ -11,7 +11,10 @@ class Package:
         self._end_location = end_location
         self.weight = weight
         self.customer_info = contact_info
+<<<<<<< Updated upstream
         self._package_id = self.generate_id()
+=======
+>>>>>>> Stashed changes
         # self.distance = self.calculate_distance()
         
     # def validate_id(self, value):

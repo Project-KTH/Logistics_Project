@@ -12,8 +12,15 @@ class ApplicationData:
         :param package_id: Unique identifier for the package.
         :return: Package object if found, otherwise None.
         """
-        return next((package for package in self.packages if package.package_id == package_id), None)
+        return next((package for package in self.packages if package._package_id == package_id), None)
 
+    def find_route_by_package_id(self, package_id):
+        # Iterate through routes to find the one containing the package
+        for route in self.routes:
+            for package in route.packages:
+                if package.id == package_id:
+                    return route
+        return None
     def find_vehicle_by_id(self, vehicle_id):
         """
         Find a vehicle by its unique ID.
@@ -22,6 +29,16 @@ class ApplicationData:
         :return: Vehicle object if found, otherwise None.
         """
         return next((vehicle for vehicle in self.vehicles if vehicle.id_truck == vehicle_id), None)
+
+
+    def find_route_for_package(self, package_id):
+        # Finds the route that includes the package's start and end location
+        package = self.find_package_by_id(package_id)
+        if package:
+            for route in self.routes:
+                if package.start_location in route.locations and package.end_location in route.locations:
+                    return route
+        return None
 
     def find_route_by_id(self, route_id):
         """

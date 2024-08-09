@@ -32,7 +32,6 @@ class Manager(User):
 
         fleet_info = Vehicle.vehicle_park[name]
         new_truck = Vehicle(name=fleet_info["name"], capacity=fleet_info["capacity"], range=fleet_info["range"])
-        new_truck.current_location = home_base
         self.application_data.vehicles.append(new_truck)
         print(f"Truck {new_truck.id_truck} ({new_truck.name}) added at location {home_base}.")
         return new_truck
@@ -40,26 +39,36 @@ class Manager(User):
     def reset_truck(self, truck_id):
         truck = self.application_data.find_vehicle_by_id(truck_id)
         if truck:
-            truck.current_location = "Garage"
             truck._capacity = truck._initial_capacity  # Reset capacity to full
             truck._range = truck._initial_range  # Reset range
-            truck.change_status()
             print(f"Truck {truck_id} reset.")
         else:
             print("Truck not found.")
 
-    def assign_truck(self, truck_id, route_id):
-        truck = self.application_data.find_vehicle_by_id(truck_id)
-        route = self.application_data.find_route_by_id(route_id)
-        if truck and route:
-            if truck.current_status == "Free" and truck.current_location == route.locations[0]:
-                route.truck = truck
-                truck.assign_route(route.locations)
-                print(f"Truck {truck_id} assigned to route {route_id}.")
-            else:
-                print("Truck not available or not at the starting location of the route.")
+    def assign_route_to_truck(self, truck, route):
+        """Assign a route to a truck, ensuring all checks are passed."""
+        if truck.check_schedule(route) and truck.check_matching_locations(route) and truck.check_remaining_range(route):
+            truck.assign_route(route)
+            route.truck = truck
+            print(f"Truck {truck.id_truck} assigned to route {route.route_id}.")
         else:
-            print("Truck or route not found.")
+            print(f"Cannot assign route {route.route_id} to truck {truck.id_truck} due to scheduling, location, or range constraints.")
+
+    def assign_routes_to_vehicles(self):
+        """Assign routes to available vehicles based on their capacity and location."""
+        for route in self.application_data.routes:
+            if route.truck is None:  # Check if the route already has an assigned truck
+                suitable_truck = self.find_suitable_truck(route)
+                if suitable_truck:
+                    self.assign_route_to_truck(suitable_truck, route)
+
+    def find_suitable_truck(self, route):
+        """Find a suitable truck for a given route based on capacity and location."""
+        for truck in self.application_data.vehicles:
+            if truck.track_location(datetime.now()) == route.locations[0] and truck.capacity >= sum(pkg.weight for pkg in self.application_data.packages):
+                return truck
+        print(f"No suitable truck found for route {route.route_id}.")
+        return None
 
     # Route Management
     def create_route(self, route_id, locations, departure_time):
@@ -67,6 +76,19 @@ class Manager(User):
         self.application_data.routes.append(new_route)
         print(f"Route {route_id} created.")
         return new_route
+
+    def get_routes_status(self):
+        """Get the status of all delivery routes in progress."""
+        now = datetime.now()
+        for route in self.application_data.routes:
+            if route.truck:
+                current_stop = route.truck.track_location(now)
+                delivery_weight = sum(package.weight for package in self.application_data.packages if package.start_location in route.locations)
+                print(f"Route ID: {route.route_id}")
+                print(f"Stops: {route.locations}")
+                print(f"Delivery Weight: {delivery_weight} kg")
+                print(f"Current Location: {current_stop}")
+                print("-" * 40)
 
     # User Management
     def add_user(self, user_id, name, contact_info, role):
