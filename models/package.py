@@ -1,26 +1,30 @@
-from models.location import Location
-
+# from models.location import Location
+import random
+import string
 
 class Package:
-    def __init__(self, package_id: str, start_location, end_location, weight: float, contact_info: str):
-        self.validate_id(package_id)
+
+    id_list = []
+
+    def __init__(self, start_location, end_location, weight: float, contact_info: str):
         self._start_location = start_location
         self._end_location = end_location
         self.weight = weight
         self.customer_info = contact_info
-        self.distance = self.calculate_distance()
+        self._package_id = self.generate_id()
+        # self.distance = self.calculate_distance()
         
-    def validate_id(self, value):
-        if not value.isalnum():
-            raise ValueError('Package ID should contain letters and digits only')
-        elif not any(char.isdigit() for char in value):
-            raise ValueError('Package ID should contain at least one digit')
-        elif not any(char.isalpha() for char in value):
-            raise ValueError('Package ID should contain at least one letter')
-        elif len(value) < 3:
-            raise ValueError('Package ID should be at least 3 characters long')
-        else:
-            self._package_id = value
+    # def validate_id(self, value):
+    #     if not value.isalnum():
+    #         raise ValueError('Package ID should contain letters and digits only')
+    #     elif not any(char.isdigit() for char in value):
+    #         raise ValueError('Package ID should contain at least one digit')
+    #     elif not any(char.isalpha() for char in value):
+    #         raise ValueError('Package ID should contain at least one letter')
+    #     elif len(value) < 3:
+    #         raise ValueError('Package ID should be at least 3 characters long')
+    #     else:
+    #         self._package_id = value
 
     @property
     def id(self):
@@ -61,11 +65,27 @@ class Package:
     #     distance = self.start_location.get_distance_to(self.end_location.name)
     #     return distance
 
+    def generate_id(self):
+
+        letters = string.ascii_uppercase
+        numbers = string.digits
+
+        while True:
+
+            first_two_characters = ''.join(random.choices(letters, k=2))
+            rest_characters = ''.join(random.choices(numbers, k=4))
+            the_id = first_two_characters + rest_characters
+
+            if the_id not in self.id_list:
+                self.id_list.append(the_id)
+                return the_id
+
+
     def __str__(self) -> str:
         return (
-            f'Package N: {self.id}\n'
-            f'Weight: {self.weight}'
-            f'From: {self.start_location}'
-            f'To: {self.end_location}'
-            f'Customer: {self.customer_info}'
+            f'Package ID: {self._package_id}\n'
+            f'Weight: {self.weight}kg\n'
+            f'From: {self.start_location}\n'
+            f'To: {self.end_location}\n'
+            f'Customer: {self.customer_info}\n'
         )
