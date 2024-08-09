@@ -1,33 +1,20 @@
 # from models.location import Location
 import random
 import string
+from models.constants.location_constants import Cities
+
 
 class Package:
 
     id_list = []
 
     def __init__(self, start_location, end_location, weight: float, contact_info: str):
-        self._start_location = start_location
-        self._end_location = end_location
+        self._start_location = Cities.from_string(start_location)
+        self._end_location = Cities.from_string(end_location)
         self.weight = weight
-        self.customer_info = contact_info
-<<<<<<< Updated upstream
+        self.contact_info = contact_info
         self._package_id = self.generate_id()
-=======
->>>>>>> Stashed changes
         # self.distance = self.calculate_distance()
-        
-    # def validate_id(self, value):
-    #     if not value.isalnum():
-    #         raise ValueError('Package ID should contain letters and digits only')
-    #     elif not any(char.isdigit() for char in value):
-    #         raise ValueError('Package ID should contain at least one digit')
-    #     elif not any(char.isalpha() for char in value):
-    #         raise ValueError('Package ID should contain at least one letter')
-    #     elif len(value) < 3:
-    #         raise ValueError('Package ID should be at least 3 characters long')
-    #     else:
-    #         self._package_id = value
 
     @property
     def id(self):
@@ -47,7 +34,7 @@ class Package:
     
     @weight.setter
     def weight(self, value):
-        if not value:
+        if value == '':
             raise ValueError('Weight cannot be empty')
         elif not isinstance(value, (float, int)):
             raise ValueError('Weight must be a number')
@@ -74,7 +61,6 @@ class Package:
         numbers = string.digits
 
         while True:
-
             first_two_characters = ''.join(random.choices(letters, k=2))
             rest_characters = ''.join(random.choices(numbers, k=4))
             the_id = first_two_characters + rest_characters
@@ -83,12 +69,11 @@ class Package:
                 self.id_list.append(the_id)
                 return the_id
 
-
     def __str__(self) -> str:
         return (
             f'Package ID: {self._package_id}\n'
             f'Weight: {self.weight}kg\n'
             f'From: {self.start_location}\n'
             f'To: {self.end_location}\n'
-            f'Customer: {self.customer_info}\n'
+            f'Customer: {self.contact_info}\n'
         )
