@@ -2,3 +2,4 @@
 # Other ignores
 *.pyc
 *.pyo
+.vscode

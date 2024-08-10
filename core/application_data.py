@@ -1,6 +1,7 @@
+from models.vehicle import Vehicle
 class ApplicationData:
     def __init__(self):
-        self.vehicles = []
+        self.init_vehicles()
         self.routes = []
         self.packages = []
         self.users = []
@@ -57,3 +58,10 @@ class ApplicationData:
         :return: User object if found, otherwise None.
         """
         return next((user for user in self.users if user.user_id == user_id), None)
+    
+    def init_vehicles(self):
+        self.vehicles: list[Vehicle] = []
+        for fleet in Vehicle.vehicle_park.values():
+            for _ in range(fleet["units"]):
+                new_truck = Vehicle(fleet["name"], fleet["capacity"], fleet["range"])
+                self.vehicles.append(new_truck)

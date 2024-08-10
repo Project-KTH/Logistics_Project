@@ -16,3 +16,9 @@ class TestVehicle(TestCase):
         self.assertEqual(self.vehicle.capacity, VALID_CAPACITY)
         self.assertEqual(self.vehicle.range, VALID_RANGE)
         self.assertIsInstance(self.vehicle, Vehicle)
+    
+    def test_create_vehicle_with_increment(self):
+        truck1 = Vehicle(VALID_VEHICLE_NAME, VALID_CAPACITY, VALID_RANGE)
+        truck2 = Vehicle(VALID_VEHICLE_NAME, VALID_CAPACITY, VALID_RANGE)
+        
+        self.assertEqual(truck1._id_truck, truck2._id_truck-1)

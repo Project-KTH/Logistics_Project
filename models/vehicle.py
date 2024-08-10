@@ -227,13 +227,13 @@ class Vehicle:
         )
 
 #will move to app_data
-all_vehicles: list[Vehicle] = []
-for fleet in Vehicle.vehicle_park.values():
-    for n in range(fleet["units"]):
-        new_truck = Vehicle(fleet["name"], fleet["capacity"], fleet["range"])
-        all_vehicles.append(new_truck)
+# all_vehicles: list[Vehicle] = []
+# for fleet in Vehicle.vehicle_park.values():
+#     for n in range(fleet["units"]):
+#         new_truck = Vehicle(fleet["name"], fleet["capacity"], fleet["range"])
+#         all_vehicles.append(new_truck)
 
-print("------ All vehicles are ready to go ------") #optional, something like system check/the creation is successful.
+# print("------ All vehicles are ready to go ------") #optional, something like system check/the creation is successful.
 
-for each in all_vehicles:
-    print(str(each))
+# for each in all_vehicles:
+#     print(str(each))
