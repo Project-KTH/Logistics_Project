@@ -60,3 +60,6 @@ class TestRoute(TestCase):
     def testStr_ReturnsCorrectFormat(self):
         expected = f'Route ID: 1111, Locations: SYD (10:45), PER (08:54), DAR (07:10), Truck ID: No truck assigned'
         self.assertEqual(str(self.route), expected)
+
+    def testLen_ReturnCorrectly(self):
+        self.assertEqual(len(self.route), 8041)
