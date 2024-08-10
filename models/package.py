@@ -9,8 +9,8 @@ class Package:
     id_list = []
 
     def __init__(self, start_location, end_location, weight: float, contact_info: str):
-        self._start_location = Cities.from_string(start_location)
-        self._end_location = Cities.from_string(end_location)
+        self._start_location = start_location
+        self._end_location = end_location
         self.weight = weight
         self.contact_info = contact_info
         self._package_id = self.generate_id()
@@ -73,7 +73,7 @@ class Package:
         return (
             f'Package ID: {self._package_id}\n'
             f'Weight: {self.weight}kg\n'
-            f'From: {self.start_location}\n'
-            f'To: {self.end_location}\n'
+            f'From: {self.start_location.name}\n'
+            f'To: {self.end_location.name}\n'
             f'Customer: {self.contact_info}\n'
         )

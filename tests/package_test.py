@@ -1,11 +1,7 @@
 from unittest import TestCase
 from models.package import Package
+from tests.mock_objects import mock_location
 
-VALID_PACKAGE_START_LOCATION_FULLNAME = 'Sydney'
-INVALID_PACKAGE_START_LOCATION = 'Canberra'
-
-VALID_PACKAGE_END_LOCATION_ABBR = 'PER'
-INVALID_PACKAGE_END_LOCATION = 'Newcastle'
 
 VALID_PACKAGE_WEIGHT = 1.5
 INVALID_PACKAGE_WEIGHT_ZERO = 0
@@ -18,45 +14,34 @@ VALID_PACKAGE_CONTACT_INFO = 'contact info'
 
 class TestPackage(TestCase):
     def setUp(self):
-        self.package = Package(VALID_PACKAGE_START_LOCATION_FULLNAME, VALID_PACKAGE_END_LOCATION_ABBR,
-                               VALID_PACKAGE_WEIGHT, VALID_PACKAGE_CONTACT_INFO)
+        self.location1 = mock_location()
+        self.location1.name = 'SYD'
+        self.location2 = mock_location()
+        self.location2.name = 'PER'
+        self.package = Package(self.location1, self.location2, VALID_PACKAGE_WEIGHT, VALID_PACKAGE_CONTACT_INFO)
 
     def testInitialiser_InitialisesSuccessfully(self):
         self.assertEqual(self.package.weight, VALID_PACKAGE_WEIGHT)
-        self.assertEqual(self.package.start_location, 'SYD')
-        self.assertEqual(self.package.end_location, 'PER')
+        self.assertEqual(self.package.start_location.name, 'SYD')
+        self.assertEqual(self.package.end_location.name, 'PER')
         self.assertEqual(self.package.contact_info, VALID_PACKAGE_CONTACT_INFO)
         self.assertIsInstance(self.package, Package)
 
-    def testInitialiser_InvalidStartLocation_RaisesError(self):
-        with self.assertRaisesRegex(ValueError, 'No office at this location: Canberra'):
-            self.package = Package(INVALID_PACKAGE_START_LOCATION, VALID_PACKAGE_END_LOCATION_ABBR,
-                                   VALID_PACKAGE_WEIGHT, VALID_PACKAGE_CONTACT_INFO)
-
-    def testInitialiser_InvalidEndLocation_RaisesError(self):
-        with self.assertRaisesRegex(ValueError, 'No office at this location: Newcastle'):
-            self.package = Package(VALID_PACKAGE_START_LOCATION_FULLNAME, INVALID_PACKAGE_END_LOCATION,
-                                   VALID_PACKAGE_WEIGHT, VALID_PACKAGE_CONTACT_INFO)
-
     def testInitialiser_WeightZero_RaisesError(self):
         with self.assertRaisesRegex(ValueError, 'Weight cannot be 0 or less'):
-            self.package = Package(VALID_PACKAGE_START_LOCATION_FULLNAME, VALID_PACKAGE_END_LOCATION_ABBR,
-                                   INVALID_PACKAGE_WEIGHT_ZERO, VALID_PACKAGE_CONTACT_INFO)
+            self.package.weight = INVALID_PACKAGE_WEIGHT_ZERO
 
     def testInitialiser_WeightNegative_RaisesError(self):
         with self.assertRaisesRegex(ValueError, 'Weight cannot be 0 or less'):
-            self.package = Package(VALID_PACKAGE_START_LOCATION_FULLNAME, VALID_PACKAGE_END_LOCATION_ABBR,
-                                   INVALID_PACKAGE_WEIGHT_NEGATIVE, VALID_PACKAGE_CONTACT_INFO)
+            self.package.weight = INVALID_PACKAGE_WEIGHT_NEGATIVE
 
     def testInitialiser_WeightNonNumber_RaisesError(self):
         with self.assertRaisesRegex(ValueError, 'Weight must be a number'):
-            self.package = Package(VALID_PACKAGE_START_LOCATION_FULLNAME, VALID_PACKAGE_END_LOCATION_ABBR,
-                                   INVALID_PACKAGE_WEIGHT_NONNUMBER, VALID_PACKAGE_CONTACT_INFO)
+            self.package.weight = INVALID_PACKAGE_WEIGHT_NONNUMBER
 
     def testInitialiser_WeightEmpty_RaisesError(self):
         with self.assertRaisesRegex(ValueError, 'Weight cannot be empty'):
-            self.package = Package(VALID_PACKAGE_START_LOCATION_FULLNAME, VALID_PACKAGE_END_LOCATION_ABBR,
-                                   INVALID_PACKAGE_WEIGHT_EMPTY, VALID_PACKAGE_CONTACT_INFO)
+            self.package.weight = INVALID_PACKAGE_WEIGHT_EMPTY
 
     def testInitialiser_CreatesIDCorrectly(self):
         def contains_two_letters(value):
@@ -70,6 +55,10 @@ class TestPackage(TestCase):
 
         self.assertEqual(len(self.package._package_id), 6)
         self.assertTrue(contains_two_letters(self.package._package_id))
+
+    def testSetter_SetsWeightCorrectly(self):
+        self.package.weight = 2.5
+        self.assertEqual(self.package.weight, 2.5)
 
     def testStr_ReturnsCorrectFormat(self):
         self.package._package_id = 'JG5742'
