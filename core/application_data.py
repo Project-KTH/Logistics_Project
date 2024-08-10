@@ -1,10 +1,12 @@
 from models.vehicle import Vehicle
+from models.user import User
+
 class ApplicationData:
     def __init__(self):
         self.init_vehicles()
         self.routes = []
         self.packages = []
-        self.users = []
+        self.init_users()
 
     def find_package_by_id(self, package_id):
         """
@@ -65,3 +67,12 @@ class ApplicationData:
             for _ in range(fleet["units"]):
                 new_truck = Vehicle(fleet["name"], fleet["capacity"], fleet["range"])
                 self.vehicles.append(new_truck)
+    
+    def init_users(self):
+        self.users: list[User] = []
+        for n in range(5):
+            user_id = 1000 + n
+            name = "Test_User_0" + str(n)
+            contact_info = f"{name}@gmail.com"
+            new_user = User(user_id, name, contact_info)
+            self.users.append(new_user)
