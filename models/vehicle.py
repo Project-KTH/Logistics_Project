@@ -5,7 +5,7 @@ from helpers import distances
 
 class Vehicle:
 
-    id_vehicle = 1001
+    id_vehicle = 1001  # Class variable
     SPEED_CONSTANT = 87
 
     vehicle_park = {
@@ -14,20 +14,18 @@ class Vehicle:
         "Actros": {"units": 15, "name": "Actros", "capacity": 26_000, "range": 13_000},
     }
 
-    def __init__(self, name, capacity, range):
+    def __init__(self, name, capacity, truck_range):
         self._name = name
         self._capacity = capacity
-        self._range = range
+        self._truck_range = truck_range
         self._initial_capacity = capacity  # Initial capacity to reset to full capacity
-        self._initial_range = range  # To reset range
-
+        self._initial_range = truck_range  # To reset truck range
         self._id_truck = Vehicle.id_vehicle
         Vehicle.id_vehicle += 1
         self._routes = [] # List of all routes for a truck.
 
         # self._current_status = ""
         # self._current_location = ""
-
 
     @property
     def name(self):
@@ -42,8 +40,8 @@ class Vehicle:
         return self._capacity
 
     @property
-    def range(self):
-        return self._range
+    def truck_range(self):
+        return self._truck_range
 
     # @property
     # def current_status(self):
@@ -171,9 +169,9 @@ class Vehicle:
             return True
 
     def check_remaining_range(self, new_route):
-        if self._initial_range == self._range and self._initial_range > len(new_route):
+        if self._initial_range == self._truck_range and self._initial_range > len(new_route):
             return True
-        if self._range > len(new_route):
+        if self._truck_range > len(new_route):
             return True
         else:
             raise ValueError(f"Range not enough to cover {len(new_route)} km")
@@ -181,11 +179,11 @@ class Vehicle:
     def assign_route(self, new_route):
         available = self.check_schedule(new_route)
         location = self.check_matching_locations(new_route)
-        range = self.check_remaining_range(new_route)
+        has_range = self.check_remaining_range(new_route)
 
-        if all([available, location, range]):
+        if all([available, location, has_range]):
             self._routes.append(new_route)
-            self._range -= len(new_route)
+            self._truck_range -= len(new_route)
 
             print(f"{new_route} added to {self._name} ID: {self._id_truck}")
 
@@ -201,15 +199,15 @@ class Vehicle:
     def update_range(self, distance):
         if distance <= 0:
             raise ValueError("Distance is expected to be a positive value")
-        if distance > self._range:
+        if distance > self._truck_range:
             raise ValueError(f"Remaining range is not enough for distance {distance} km")
 
-        self._range -= distance
+        self._truck_range -= distance
 
     def reset(self):
         """Reset the truck's capacity and range to initial values."""
         self._capacity = self._initial_capacity
-        self._range = self._initial_range
+        self._truck_range = self._initial_range
         print(f"Vehicle ID: {self._id_truck} has been reset.")
     # def change_status(self):
     #     if self._current_status == "Free":
@@ -223,7 +221,7 @@ class Vehicle:
             f"location: {self.track_location()}, "
             f"route: {self.find_active_route()}, "
             f"capacity left: {self.capacity:_}_kg, "
-            f"range to go: {self.range:_}_km"
+            f"range to go: {self.truck_range:_}_km"
         )
 
 #will move to app_data

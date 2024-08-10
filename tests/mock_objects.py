@@ -96,5 +96,15 @@ def mock_route():
 
     route.__str__.side_effect = custom_str
 
+    def custom_len():
+        total_distance = 0
+        for i in range(len(route.locations) - 1):
+            start_location = route.locations[i]
+            end_location = route.locations[i + 1]
+            total_distance += start_location.get_distance_to(end_location.name)
+        return total_distance
+
+    route.__len__.side_effect = custom_len
+
     return route
 
