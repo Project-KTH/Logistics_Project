@@ -4,7 +4,7 @@ from models.route import Route
 from tests.mock_objects import mock_location, mock_package
 
 VALID_ROUTE_ID = 1111
-VALID_ROUTE_DEPARTURE_TIME = '10:45'
+VALID_ROUTE_DEPARTURE_TIME = '10-08-2024 10:45'
 
 
 class TestRoute(TestCase):
@@ -42,7 +42,7 @@ class TestRoute(TestCase):
 
     def testCalculateArrivalTimes_WorksCorrectly(self):
         # Example expected arrival times, adjust based on your mock data and distance calculations
-        expected_arrival_times = ['10:45', '08:54', '07:10']
+        expected_arrival_times = ['10-08-2024 10:45', '12-08-2024 08:54', '14-08-2024 07:10']
         self.assertEqual(self.route.calculate_arrival_times(), expected_arrival_times)
 
     def testCalculateNextStop_WorksCorrectly(self):
@@ -58,7 +58,8 @@ class TestRoute(TestCase):
                                                 self.location4])
 
     def testStr_ReturnsCorrectFormat(self):
-        expected = f'Route ID: 1111, Locations: SYD (10:45), PER (08:54), DAR (07:10), Truck ID: No truck assigned'
+        expected = (f'Route ID: 1111, Locations: SYD (10-08-2024 10:45), PER (12-08-2024 08:54), '
+                    f'DAR (14-08-2024 07:10), Truck ID: No truck assigned')
         self.assertEqual(str(self.route), expected)
 
     def testLen_ReturnCorrectly(self):

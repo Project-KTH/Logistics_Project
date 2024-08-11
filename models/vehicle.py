@@ -57,23 +57,23 @@ class Vehicle:
     #         raise ValueError(f"Location '{new_location}' not allowed")
     #     self._current_location = new_location
 
+    from datetime import datetime, timedelta
+
     def find_active_route(self, track_date=None):
-        if track_date is None:
-            track_date = datetime.now()
+        if track_date:  # if track_date is empty, it assigns current time
+            track_date_datetime = datetime.strptime(track_date, '%d-%m-%Y %H:%M')
+        else:  # reformats track_date to datetime
+            track_date_datetime = datetime.now()
 
         active_route = None
-        for assigned_route in self._routes:
-            assigned_route_start_date = assigned_route.departure_time
-            if track_date < assigned_route_start_date:
-                break
+        for assigned_route in self._routes:  # checks every route and determine its completion date
+            assigned_route_start_date = datetime.strptime(assigned_route.departure_time, '%d-%m-%Y %H:%M')
+            assigned_route_expected_hours = len(assigned_route) / Vehicle.SPEED_CONSTANT
+            assigned_route_end_date = assigned_route_start_date + timedelta(hours=assigned_route_expected_hours)
 
-            assigned_route_expected_hours = len(assigned_route)/Vehicle.SPEED_CONSTANT
-            assigned_route_delta = timedelta(hours=assigned_route_expected_hours)
-            assigned_route_end_date = assigned_route_start_date + assigned_route_delta
-
-            if track_date >= assigned_route.departure_time and track_date <= assigned_route_end_date:
+            # if track_date falls within route's start date and its end date, it returns the route
+            if assigned_route_start_date <= track_date_datetime <= assigned_route_end_date:
                 active_route = assigned_route
-                break
 
         return active_route
 

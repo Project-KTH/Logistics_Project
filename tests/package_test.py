@@ -14,10 +14,8 @@ VALID_PACKAGE_CONTACT_INFO = 'contact info'
 
 class TestPackage(TestCase):
     def setUp(self):
-        self.location1 = mock_location()
-        self.location1.name = 'SYD'
-        self.location2 = mock_location()
-        self.location2.name = 'PER'
+        self.location1 = mock_location('SYD')
+        self.location2 = mock_location('PER')
         self.package = Package(self.location1, self.location2, VALID_PACKAGE_WEIGHT, VALID_PACKAGE_CONTACT_INFO)
 
     def testInitialiser_InitialisesSuccessfully(self):

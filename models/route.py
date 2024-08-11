@@ -8,7 +8,7 @@ class Route:
     def __init__(self, route_id, locations, departure_time):
         self.route_id = route_id
         self.locations = locations  # Ordered list of locations to visit
-        self.departure_time = datetime.strptime(departure_time, '%H:%M')
+        self.departure_time = datetime.strptime(departure_time, '%d-%m-%Y %H:%M')
         self.truck = None
 
     def calculate_travel_time(self, distance):
@@ -31,7 +31,7 @@ class Route:
             arrival_times.append(current_time)
 
         # Convert datetime objects to strings in desired format
-        return [time.strftime('%H:%M') for time in arrival_times]
+        return [time.strftime('%d-%m-%Y %H:%M') for time in arrival_times]
 
     def next_stop(self, current_location):
         """Determine the next stop based on the current location."""

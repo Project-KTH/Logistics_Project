@@ -5,8 +5,6 @@ from models.location import Location
 from models.route import Route
 from models.vehicle import Vehicle
 from tests.location_test import VALID_LOCATION_NAME
-
-
 from models.package import Package
 
 
@@ -18,9 +16,9 @@ def mock_package():
     return package
 
 
-def mock_location():
+def mock_location(name):
     location = MagicMock(spec=Location)
-    location.name = Cities.from_string(VALID_LOCATION_NAME)
+    location.name = name
     location.distances = Cities.distances
 
     def get_distance_to(other_city: str):
@@ -40,12 +38,13 @@ def mock_location():
 
 def mock_route():
     route = MagicMock(spec=Route)
+    route.locations = []
 
-    def calculate_time():
+    def calculate_travel_time(distance):
         average_speed = Vehicle.SPEED_CONSTANT
-        return route.distance / average_speed
+        return distance / average_speed
 
-    route.calculate_time.side_effect = calculate_time
+    route.calculate_travel_time.side_effect = calculate_travel_time
 
     def calculate_arrival_times():
         """Calculate estimated arrival times for each location in the route."""
@@ -104,7 +103,7 @@ def mock_route():
             total_distance += start_location.get_distance_to(end_location.name)
         return total_distance
 
-    route.__len__.side_effect = custom_len
+    route.__len__.side_effect = lambda: custom_len()
 
     return route
 
