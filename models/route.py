@@ -8,7 +8,7 @@ class Route:
     def __init__(self, route_id, locations, departure_time):
         self.route_id = route_id
         self.locations = locations  # Ordered list of locations to visit
-        self.departure_time = datetime.strptime(departure_time, '%d-%m-%Y %H:%M')
+        self.departure_time = departure_time
         self.truck = None
 
     def calculate_travel_time(self, distance):
@@ -18,8 +18,8 @@ class Route:
 
     def calculate_arrival_times(self):
         """Calculate estimated arrival times for each location in the route."""
-        arrival_times = [self.departure_time]
-        current_time = self.departure_time
+        arrival_times = [datetime.strptime(self.departure_time, '%d-%m-%Y %H:%M')]
+        current_time = arrival_times[0]
 
         for i in range(len(self.locations) - 1):
             start = self.locations[i]

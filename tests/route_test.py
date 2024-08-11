@@ -9,16 +9,11 @@ VALID_ROUTE_DEPARTURE_TIME = '10-08-2024 10:45'
 
 class TestRoute(TestCase):
     def setUp(self):
-        self.location1 = mock_location()
-        self.location1.name = 'SYD'
-        self.location2 = mock_location()
-        self.location2.name = 'PER'
-        self.location3 = mock_location()
-        self.location3.name = 'DAR'
-        self.location4 = mock_location()
-        self.location4.name = 'MEL'
-        self.location5 = mock_location()
-        self.location5.name = 'BRI'
+        self.location1 = mock_location('SYD')
+        self.location2 = mock_location('PER')
+        self.location3 = mock_location('DAR')
+        self.location4 = mock_location('MEL')
+        self.location5 = mock_location('BRI')
         self.package1 = mock_package()
         self.package1.start_location = self.location1
         self.package1.end_location = self.location5
