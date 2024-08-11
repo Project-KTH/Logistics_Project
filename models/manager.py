@@ -11,10 +11,10 @@ class Manager(User):
         self.access_level = access_level  # Differentiates permissions among managers
 
     # Package Management
-    def create_package(self, package_id, start_location, end_location, weight, customer_info):
-        new_package = Package(package_id, start_location, end_location, weight, customer_info)
+    def create_package(self, start_location, end_location, weight, customer_info):
+        new_package = Package(start_location, end_location, weight, customer_info)
         self.application_data.packages.append(new_package)
-        print(f"Package {package_id} created.")
+        print(f"Package {new_package._package_id} created.")
         return new_package
 
     def delete_package(self, package_id):
@@ -31,7 +31,7 @@ class Manager(User):
             raise ValueError(f"Model name '{name}' is not available in the vehicle park.")
 
         fleet_info = Vehicle.vehicle_park[name]
-        new_truck = Vehicle(name=fleet_info["name"], capacity=fleet_info["capacity"], range=fleet_info["range"])
+        new_truck = Vehicle(name=fleet_info["name"], capacity=fleet_info["capacity"], truck_range=fleet_info["range"])
         self.application_data.vehicles.append(new_truck)
         print(f"Truck {new_truck.id_truck} ({new_truck.name}) added at location {home_base}.")
         return new_truck
@@ -39,8 +39,7 @@ class Manager(User):
     def reset_truck(self, truck_id):
         truck = self.application_data.find_vehicle_by_id(truck_id)
         if truck:
-            truck._capacity = truck._initial_capacity  # Reset capacity to full
-            truck._range = truck._initial_range  # Reset range
+            truck.reset()  # Reset capacity and range
             print(f"Truck {truck_id} reset.")
         else:
             print("Truck not found.")
@@ -80,12 +79,14 @@ class Manager(User):
     def get_routes_status(self):
         """Get the status of all delivery routes in progress."""
         now = datetime.now()
+
         for route in self.application_data.routes:
             if route.truck:
                 current_stop = route.truck.track_location(now)
                 delivery_weight = sum(package.weight for package in self.application_data.packages if package.start_location in route.locations)
+                location_names = [loc.name for loc in route.locations]
                 print(f"Route ID: {route.route_id}")
-                print(f"Stops: {route.locations}")
+                print(f"Stops: {', '.join(location_names)}")
                 print(f"Delivery Weight: {delivery_weight} kg")
                 print(f"Current Location: {current_stop}")
                 print("-" * 40)

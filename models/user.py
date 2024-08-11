@@ -15,11 +15,11 @@ class User:
     def __str__(self):
         return f"User ID: {self.user_id}, Name: {self.name}, Role: {self.role}, Contact Info: {self.contact_info}"
 
-    def order_package(self, package_id, start_location, end_location, weight, application_data):
-        package = Package(package_id, start_location, end_location, weight, self.contact_info)
+    def order_package(self, start_location, end_location, weight, application_data):
+        package = Package(start_location, end_location, weight, self.contact_info)
         application_data.packages.append(package)
         self.ordered_packages.append(package)
-        print(f"Package {package_id} ordered by user {self.user_id}.")
+        print(f"Package {package._package_id} ordered by user {self.user_id}.")
 
     def track_package(self, package_id, application_data):
         package = application_data.find_package_by_id(package_id)
@@ -28,7 +28,7 @@ class User:
             if current_route and current_route.truck:
                 current_location = current_route.truck.track_location()
                 expected_arrival = self.calculate_expected_arrival(current_route, package)
-                print(f"Package ID: {package.id}")
+                print(f"Package ID: {package._package_id}")
                 print(f"Current Location: {current_location}")
                 print(f"Expected Arrival Time: {expected_arrival.strftime('%Y-%m-%d %H:%M')}")
                 print(f"Weight: {package.weight} kg")

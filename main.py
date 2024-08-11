@@ -1,6 +1,8 @@
 from datetime import timedelta, datetime
+import random
 
 from core.application_data import ApplicationData
+from models.location import Location
 from models.manager import Manager
 from models.route import Route
 from models.user import User
@@ -9,11 +11,20 @@ from core.command_factory import CommandFactory
 from core.engine import Engine
 
 
-app_data = ApplicationData()
-cmd_factory = CommandFactory(app_data)
-engine = Engine(cmd_factory)
+# app_data = ApplicationData()
+# cmd_factory = CommandFactory(app_data)
+# engine = Engine(cmd_factory)
+#
+# engine.start()
+#
 
-engine.start()
+
+
+
+
+
+
+
 
 
 # Helper function to format datetime
@@ -31,9 +42,9 @@ truck1 = manager.add_truck("Scania", "SYD")
 truck2 = manager.add_truck("Man", "MEL")
 
 # Create packages
-package1 = manager.create_package("PKG001", "SYD", "MEL", 10000, "john@example.com")
-package2 = manager.create_package("PKG002", "MEL", "ADL", 5000, "jane@example.com")
-package3 = manager.create_package("PKG003", "SYD", "ADL", 15000, "bob@example.com")
+package1 = manager.create_package("SYD", "MEL", 10000, "john@example.com")
+package2 = manager.create_package( "MEL", "ADL", 5000, "jane@example.com")
+package3 = manager.create_package( "SYD", "ADL", 15000, "bob@example.com")
 
 # Create routes and assign them to trucks
 departure_time1 = datetime.now() + timedelta(hours=1)  # 1 hour from now

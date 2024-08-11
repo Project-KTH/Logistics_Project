@@ -5,10 +5,11 @@ from models.location import Location
 
 
 class Route:
-    def __init__(self, route_id, locations, departure_time):
+    def __init__(self, route_id, location_names, departure_time):
+        # Convert location names to Location objects
         self.route_id = route_id
-        self.locations = locations  # Ordered list of locations to visit
-        self.departure_time = departure_time
+        self.locations = [Location(name) for name in location_names]
+        self.departure_time = departure_time  # Ensure this is a datetime object
         self.truck = None
 
     def calculate_travel_time(self, distance):
@@ -18,7 +19,7 @@ class Route:
 
     def calculate_arrival_times(self):
         """Calculate estimated arrival times for each location in the route."""
-        arrival_times = [datetime.strptime(self.departure_time, '%d-%m-%Y %H:%M')]
+        arrival_times = [self.departure_time]  # Use the departure_time directly as a datetime object
         current_time = arrival_times[0]
 
         for i in range(len(self.locations) - 1):
@@ -35,26 +36,28 @@ class Route:
 
     def next_stop(self, current_location):
         """Determine the next stop based on the current location."""
-        if current_location not in self.locations:
+        if current_location not in [loc.name for loc in self.locations]:
             raise ValueError(f"Current location {current_location} not on route.")
 
-        current_index = self.locations.index(current_location)
+        current_index = [loc.name for loc in self.locations].index(current_location)
         if current_index < len(self.locations) - 1:
-            return self.locations[current_index + 1]
+            return self.locations[current_index + 1].name
         return None  # No further stops
 
     def update_locations_for_packages(self, packages):
         """Update the route's locations to include necessary stops for the packages."""
         # Add start and end locations for each package, ensuring order
         for package in packages:
-            if package.start_location not in self.locations:
-                self.locations.append(package.start_location)
-            if package.end_location not in self.locations:
-                self.locations.append(package.end_location)
+            start_location = Location(package.start_location)
+            end_location = Location(package.end_location)
+            if start_location not in self.locations:
+                self.locations.append(start_location)
+            if end_location not in self.locations:
+                self.locations.append(end_location)
 
     def __str__(self):
         arrival_times = self.calculate_arrival_times()
-        stops_with_times = ', '.join(f"{loc} ({time})" for loc, time in zip(self.locations, arrival_times))
+        stops_with_times = ', '.join(f"{loc.name} ({time})" for loc, time in zip(self.locations, arrival_times))
         return f"Route ID: {self.route_id}, Locations: {stops_with_times}, Truck ID: {self.truck.id_truck if self.truck else 'No truck assigned'}"
 
     def __len__(self):
