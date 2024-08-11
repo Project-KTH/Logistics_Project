@@ -11,6 +11,7 @@ class Location:
         return self._name
 
     def get_distance_to(self, other_city: str):
+        """Gets the distance from the current object to another location"""
         if Cities.from_string(other_city) not in self.distances[self.name]:
             raise ValueError(f"No route between {self.name} and {other_city}")
         return self.distances[self.name][Cities.from_string(other_city)]

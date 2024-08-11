@@ -56,7 +56,7 @@ class Package:
     #     return distance
 
     def generate_id(self):
-
+        """Generates a unique 6 character ID for each package"""
         letters = string.ascii_uppercase
         numbers = string.digits
 
