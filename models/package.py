@@ -7,11 +7,11 @@ class Package:
 
     id_list = []
 
-    def __init__(self, start_location, end_location, weight: float, contact_info: str):
+    def __init__(self, start_location, end_location, weight: float, customer_info: str):
         self._start_location = start_location
         self._end_location = end_location
         self.weight = weight
-        self.contact_info = contact_info
+        self.customer_info = customer_info
         self._package_id = self.generate_id()
 
     # def validate_id(self, value):
@@ -54,12 +54,12 @@ class Package:
             self._weight = value
 
     @property
-    def contact_info(self):
-        return self._contact_info
+    def customer_info(self):
+        return self._customer_info
     
-    @contact_info.setter
-    def contact_info(self, value):
-        self._contact_info = value
+    @customer_info.setter
+    def customer_info(self, value):
+        self._customer_info = value
 
     # def calculate_distance(self):
     #     distance = self.start_location.get_distance_to(self.end_location.name)
@@ -86,5 +86,5 @@ class Package:
             f'Weight: {self.weight}kg\n'
             f'From: {self.start_location}\n'
             f'To: {self.end_location}\n'
-            f'Customer: {self.contact_info}\n'
+            f'Customer: {self.customer_info}\n'
         )

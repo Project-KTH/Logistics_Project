@@ -12,11 +12,11 @@ from models.package import Package
 from core.application_data import ApplicationData
 
 
-def mock_package(start_location, end_location, weight, contact_info):
+def mock_package(start_location, end_location, weight, customer_info):
     package = Mock(spec=Package)
     package._start_location = start_location
     package._end_location = end_location
-    package.contact_info = contact_info
+    package.customer_info = customer_info
     package.weight = weight
     package._package_id = None
 
@@ -142,7 +142,6 @@ def mock_application_data():
     application_data.find_route_by_package_id.side_effect = find_route_by_package_id
 
     def find_vehicle_by_id(vehicle_id):
-
         return next((vehicle for vehicle in application_data.vehicles if vehicle.id_truck == vehicle_id), None)
 
     application_data.find_vehicle_by_id.side_effect = find_vehicle_by_id
@@ -196,7 +195,7 @@ def mock_application_data():
     return application_data
 
 
-def mock_vehicle(name, capacity, truck_range):
+def mock_vehicle(name, capacity, truck_range, truck_id=None):
     vehicle = MagicMock(spec=Vehicle)
     vehicle._name = name
     vehicle._capacity = capacity
@@ -204,7 +203,10 @@ def mock_vehicle(name, capacity, truck_range):
     vehicle._initial_capacity = capacity
     vehicle._initial_range = truck_range
     vehicle._routes = []
+    vehicle._id_truck = truck_id
     vehicle._current_location = 'Garage'
+
+    type(vehicle).id_truck = PropertyMock(return_value=vehicle._id_truck)
 
     def find_active_route(track_date=None):
         if not track_date:
@@ -350,3 +352,62 @@ def mock_vehicle(name, capacity, truck_range):
     vehicle.__str__.side_effect = custom_str
 
     return vehicle
+
+
+def mock_user(user_id, name, contact_info, role='basic'):
+    user = MagicMock(spec = User)
+    user.name = name
+    user.user_id = user_id
+    user.contact_info = contact_info
+    user.role = role
+
+    def update_contact_info(new_contact_info):
+        user.contact_info = new_contact_info
+        print(f"Contact information for user {user.user_id} updated.")
+
+    user.update_contact_info.side_effect = update_contact_info
+
+    def custom_str():
+        return f"User ID: {user.user_id}, Name: {user.name}, Role: {user.role}, Contact Info: {user.contact_info}"
+
+    user.__str__.side_effect = custom_str
+
+    def order_package(start_location, end_location, weight, application_data):
+        package = Package(start_location, end_location, weight, user.contact_info)
+        application_data.packages.append(package)
+        user.ordered_packages.append(package)
+        print(f"Package {package._package_id} ordered by user {user.user_id}.")
+
+    user.order_package.side_effect = order_package
+
+    def track_package(package_id, application_data):
+        package = application_data.find_package_by_id(package_id)
+        if package and package in user.ordered_packages:
+            current_route = application_data.find_route_for_package(package_id)
+            if current_route and current_route.truck:
+                current_location = current_route.truck.track_location()
+                expected_arrival = user.calculate_expected_arrival(current_route, package)
+                print(f"Package ID: {package._package_id}")
+                print(f"Current Location: {current_location}")
+                print(
+                    f"Expected Arrival Time: {expected_arrival.strftime('%Y-%m-%d %H:%M') if not isinstance(expected_arrival, str) else expected_arrival}")
+                print(f"Weight: {package.weight} kg")
+                print(f"Start Point: {package.start_location}")
+            else:
+                print(f"No route or truck found for package {package_id}.")
+        else:
+            print(f"Package {package_id} not found or not ordered by this user.")
+
+    user.track_package.side_effect = track_package
+
+    def calculate_expected_arrival(route, package):
+        """Calculate the expected arrival time at the package's end location."""
+        arrival_times = route.calculate_arrival_times()
+        # Find the index of the package's end location in the route's location list
+        end_location_index = route.locations.index(package.end_location)
+        # Return the expected arrival time at the package's end location
+        return arrival_times[end_location_index]
+
+    user.calculate_expected_arrival.side_effect = calculate_expected_arrival
+
+    return user

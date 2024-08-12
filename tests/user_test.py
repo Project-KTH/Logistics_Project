@@ -70,6 +70,7 @@ class TestUser(TestCase):
         self.assertEqual(self.user.user_id, VAlID_USER_ID)
         self.assertEqual(self.user.name, VALID_USER_NAME)
         self.assertEqual(self.user.contact_info, VALID_USER_CONTACT_INFO)
+        self.assertIsInstance(self.user, User)
 
     def testUpdateContactInfo_OK(self):
         self.user.update_contact_info('New contact info')
@@ -117,3 +118,21 @@ class TestUser(TestCase):
         self.application_data.routes = [self.route1]
         self.application_data.packages = [self.package1, self.package2, self.package3, self.package4]
         self.user.track_package('FY8475', self.application_data)
+
+    def testCalculateExpectedArrival_OK(self):
+        def calculate_expected_arrival(route, package):
+            """Calculate the expected arrival time at the package's end location."""
+            arrival_times = route.calculate_arrival_times()
+            end_location = package.end_location
+            end_location_index = next(
+                (i for i, loc in enumerate(route.locations)
+                 if loc.name == end_location),
+                None
+            )
+            if end_location_index is None:
+                raise ValueError(f"End location '{end_location}' not found in route locations.")
+            return arrival_times[end_location_index]
+
+        self.user.calculate_expected_arrival = calculate_expected_arrival
+        self.assertEqual(self.user.calculate_expected_arrival(self.route1, self.package2), '13-08-2024 06:17')
+

@@ -9,20 +9,20 @@ INVALID_PACKAGE_WEIGHT_NEGATIVE = -1
 INVALID_PACKAGE_WEIGHT_NONNUMBER = 'a'
 INVALID_PACKAGE_WEIGHT_EMPTY = ''
 
-VALID_PACKAGE_CONTACT_INFO = 'contact info'
+VALID_PACKAGE_CUSTOMER_INFO = 'customer info'
 
 
 class TestPackage(TestCase):
     def setUp(self):
         self.location1 = mock_location('SYD')
         self.location2 = mock_location('PER')
-        self.package = Package(self.location1, self.location2, VALID_PACKAGE_WEIGHT, VALID_PACKAGE_CONTACT_INFO)
+        self.package = Package(self.location1, self.location2, VALID_PACKAGE_WEIGHT, VALID_PACKAGE_CUSTOMER_INFO)
 
     def testInitialiser_InitialisesSuccessfully(self):
         self.assertEqual(self.package.weight, VALID_PACKAGE_WEIGHT)
         self.assertEqual(self.package.start_location.name, 'SYD')
         self.assertEqual(self.package.end_location.name, 'PER')
-        self.assertEqual(self.package.contact_info, VALID_PACKAGE_CONTACT_INFO)
+        self.assertEqual(self.package.customer_info, VALID_PACKAGE_CUSTOMER_INFO)
         self.assertIsInstance(self.package, Package)
 
     def testInitialiser_WeightZero_RaisesError(self):
@@ -65,6 +65,6 @@ class TestPackage(TestCase):
             f'Weight: 1.5kg\n'
             f'From: SYD\n'
             f'To: PER\n'
-            f'Customer: contact info\n'
+            f'Customer: customer info\n'
         )
         self.assertEqual(expected, str(self.package))

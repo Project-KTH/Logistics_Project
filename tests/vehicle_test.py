@@ -149,7 +149,7 @@ class TestVehicle(TestCase):
         expected = (
             f'Truck ID:--1001--\n'
             f'location: DAR\n'
-            f'route: Route ID: 5634, Locations: SYD (03:34), DAR (00:47), BRI (16:10), MEL (12:27), ASP (14:22), Truck ID: No truck assigned\n'
+            f'route: Route ID: 5634, Locations: SYD (11-08-2024 03:34), DAR (13-08-2024 00:47), BRI (14-08-2024 16:10), MEL (15-08-2024 12:27), ASP (16-08-2024 14:22), Truck ID: No truck assigned\n'
             f'capacity left: 26000kg\n'
             f'range to go: 13000km'
 
