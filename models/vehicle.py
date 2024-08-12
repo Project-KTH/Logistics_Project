@@ -48,7 +48,6 @@ class Vehicle:
             if not isinstance(track_date, datetime):
                 track_date = datetime.strptime(track_date, '%d-%m-%Y %H:%M')
 
-
         active_route = None
         for assigned_route in self._routes:
             assigned_route_start_date = assigned_route.departure_time

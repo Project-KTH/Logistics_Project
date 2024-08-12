@@ -15,15 +15,9 @@ class TestRoute(TestCase):
         self.location3 = mock_location('DAR')
         self.location4 = mock_location('MEL')
         self.location5 = mock_location('BRI')
-        self.package1 = mock_package()
-        self.package1.start_location = 'SYD'
-        self.package1.end_location = 'BRI'
-        self.package2 = mock_package()
-        self.package2.start_location = 'PER'
-        self.package2.end_location = 'MEL'
-        self.package3 = mock_package()
-        self.package3.start_location = 'DAR'
-        self.package3.end_location = 'BRI'
+        self.package1 = mock_package('SYD', 'BRI', 1, 'contact info')
+        self.package2 = mock_package('PER', 'MEL', 1, 'contact info')
+        self.package3 = mock_package('DAR', 'BRI', 1, 'contact info')
         self.route = Route(VALID_ROUTE_ID, ['SYD', 'PER', 'DAR'],
                            VALID_ROUTE_DEPARTURE_TIME)
 

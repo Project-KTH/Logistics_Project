@@ -1,5 +1,6 @@
 from models.package import Package
 
+
 class User:
     def __init__(self, user_id, name, contact_info, role='basic'):
         self.user_id = user_id
@@ -30,7 +31,7 @@ class User:
                 expected_arrival = self.calculate_expected_arrival(current_route, package)
                 print(f"Package ID: {package._package_id}")
                 print(f"Current Location: {current_location}")
-                print(f"Expected Arrival Time: {expected_arrival.strftime('%Y-%m-%d %H:%M')}")
+                print(f"Expected Arrival Time: {expected_arrival.strftime('%Y-%m-%d %H:%M') if not isinstance(expected_arrival, str) else expected_arrival}")
                 print(f"Weight: {package.weight} kg")
                 print(f"Start Point: {package.start_location}")
             else:
