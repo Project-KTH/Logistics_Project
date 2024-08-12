@@ -33,7 +33,6 @@ class ApplicationData:
         """
         return next((vehicle for vehicle in self.vehicles if vehicle.id_truck == vehicle_id), None)
 
-
     def find_route_for_package(self, package_id):
         # Finds the route that includes the package's start and end location
         package = self.find_package_by_id(package_id)
