@@ -1,11 +1,11 @@
 from datetime import timedelta, datetime, date
 from helpers import distances
-# vehicle.py
+import time
 
 
 class Vehicle:
-
     id_vehicle = 1001  # Class variable
+
     SPEED_CONSTANT = 87
 
     vehicle_park = {
@@ -22,10 +22,8 @@ class Vehicle:
         self._initial_range = truck_range  # To reset truck range
         self._id_truck = Vehicle.id_vehicle
         Vehicle.id_vehicle += 1
-        self._routes = [] # List of all routes for a truck.
-
-        # self._current_status = ""
-        # self._current_location = ""
+        self._routes = []  # List of all routes for a truck.
+        self._current_location = "Garage"
 
     @property
     def name(self):
@@ -43,103 +41,85 @@ class Vehicle:
     def truck_range(self):
         return self._truck_range
 
-    # @property
-    # def current_status(self):
-    #     return self._current_status
-
-    # @property
-    # def current_location(self):
-    #     return self._current_location
-
-    # @current_location.setter
-    # def current_location(self, new_location):
-    #     if new_location not in ("SYD", "MEL", "ADL", "ASP", "BRI", "DAR", "PER"):
-    #         raise ValueError(f"Location '{new_location}' not allowed")
-    #     self._current_location = new_location
-
-    from datetime import datetime, timedelta
-
     def find_active_route(self, track_date=None):
-        if track_date:  # if track_date is empty, it assigns current time
-            track_date_datetime = datetime.strptime(track_date, '%d-%m-%Y %H:%M')
-        else:  # reformats track_date to datetime
-            track_date_datetime = datetime.now()
+        if not track_date:
+            track_date = datetime.now()
+        else:
+            if not isinstance(track_date, datetime):
+                track_date = datetime.strptime(track_date, '%d-%m-%Y %H:%M')
+
 
         active_route = None
-        for assigned_route in self._routes:  # checks every route and determine its completion date
-            assigned_route_start_date = datetime.strptime(assigned_route.departure_time, '%d-%m-%Y %H:%M')
+        for assigned_route in self._routes:
+            assigned_route_start_date = assigned_route.departure_time
             assigned_route_expected_hours = len(assigned_route) / Vehicle.SPEED_CONSTANT
             assigned_route_end_date = assigned_route_start_date + timedelta(hours=assigned_route_expected_hours)
 
-            # if track_date falls within route's start date and its end date, it returns the route
-            if assigned_route_start_date <= track_date_datetime <= assigned_route_end_date:
+            if assigned_route_start_date <= track_date <= assigned_route_end_date:
                 active_route = assigned_route
 
         return active_route
 
-
-    def track_location(self, track_date=None):
-        if track_date is None:
-            track_date = datetime.now()
+    def track_location(self, start_time=None):
+        if start_time is None:
+            start_time = datetime.now()
+        else:
+            if not isinstance(start_time, datetime):
+                start_time = datetime.strptime(start_time, '%d-%m-%Y %H:%M')
 
         location = "Garage"
         for route in self._routes:
             route_start_date = route.departure_time
-            if track_date < route_start_date:
+            if start_time < route_start_date:
                 return location
-            for n in range(len(route.locations)-1):
-                # Iterate through route locations
+            for n in range(len(route.locations) - 1):
                 start_location = route.locations[n]
-                end_location = route.locations[n+1]
-                route_distance = distances.distances[start_location][end_location]
-                route_duration = route_distance/Vehicle.SPEED_CONSTANT
+                end_location = route.locations[n + 1]
+                route_distance = distances.distances[start_location.name][end_location.name]
+                route_duration = route_distance / Vehicle.SPEED_CONSTANT
                 route_delta = timedelta(hours=route_duration)
                 route_end_date = route_start_date + route_delta
-                if route_start_date >= track_date and track_date <= route_end_date:
-                    return f"In transit to {end_location}"
+                if route_start_date <= start_time < route_end_date:
+                    return f"In transit to {end_location.name}"
                 route_start_date = route_end_date
-                location = end_location
+                location = end_location.name
 
         return location
 
+    def simulate_route(self):
+        """Simulate vehicle moving along its route, updating location every 3 seconds."""
+        for route in self._routes:
+            route_start_date = route.departure_time
+            current_time = route_start_date
+            print(f"Starting route simulation for vehicle {self._id_truck} on route {route.route_id}.")
 
-        # current_route = self.find_active_route(track_date)
+            for n in range(len(route.locations) - 1):
+                start_location = route.locations[n].name
+                end_location = route.locations[n + 1].name
+                route_distance = distances.distances[start_location][end_location]
+                route_duration = route_distance / Vehicle.SPEED_CONSTANT
+                route_delta = timedelta(hours=route_duration)
 
-        # current_route_start_date = current_route.departure_time
-        # current_route_expected_hours = len(current_route)/Vehicle.SPEED_CONSTANT
-        # current_route_delta = timedelta(hours=current_route_expected_hours)
-        # current_end_date = current_route_start_date + current_route_delta
+                # Calculate an accelerated arrival time for faster simulation
+                accelerated_seconds = route_duration * 3600  # Accelerate by treating hours as seconds
+                arrival_time = current_time + timedelta(seconds=accelerated_seconds)
+                print(
+                    f"Traveling from {start_location} to {end_location}, will arrive by {arrival_time.strftime('%H:%M:%S')}")
 
-        # self._current_location = current_route.locations[0]
+                while current_time < arrival_time:
+                    time_to_arrival = (arrival_time - current_time).total_seconds()
+                    if time_to_arrival > 3:
+                        print(f"Time: {current_time.strftime('%H:%M:%S')} - In transit to {end_location}")
+                        time.sleep(0.5)  # Sleep less time to accelerate simulation
+                        current_time += timedelta(seconds=accelerated_seconds / 10)  # Simulate a faster passage
+                    else:
+                        current_time += timedelta(seconds=time_to_arrival)
+                        break
 
-        # for n in range(1, len(current_route.locations)-1):
-        #     temp_route = current_route.locations[0:n]
+                self._current_location = end_location
+                print(f"Arrived at {end_location} at {current_time.strftime('%H:%M:%S')}.")
 
-        #     expected_hours_to_next_city = len(temp_route)/Vehicle.SPEED_CONSTANT
-        #     delta_to_next_city = timedelta(hours=expected_hours_to_next_city)
-
-        #     if current_route_start_date + delta_to_next_city == track_date:
-        #         self._current_location = current_route.locations[n]
-
-        #     elif current_route_start_date + delta_to_next_city < track_date:
-        #         self._current_location = f"In transit to {current_route.locations[n]}"
-
-        # return self._current_location
-
-    # def advance_route(self):
-    #     if self._current_status == "Free":
-    #         raise ValueError(f"The truck doesn't have assigned route. Can't advance.")
-    #     # change the location to next
-    #     inx_location = self.current_route.index(self.current_location)
-    #     self.current_location = self.current_route[inx_location+1]
-    #     if inx_location + 1 == len(self.current_route):
-    #         # complete route, end location
-    #         self._complete_route()
-
-    # def _complete_route(self):
-    #     self.change_status()
-    #     self._current_route = "Not assigned"
-    #     self._capacity = Vehicle.vehicle_park[self.name]["capacity"]
+        print(f"Route simulation for vehicle {self._id_truck} completed.")
 
     def check_schedule(self, new_route):
         if len(self._routes) > 0:
@@ -147,24 +127,26 @@ class Vehicle:
 
             last_route = self._routes[-1]
             last_route_start_date = last_route.departure_time
-            last_route_expected_hours = len(last_route)/Vehicle.SPEED_CONSTANT
+            last_route_expected_hours = len(last_route) / Vehicle.SPEED_CONSTANT
             last_route_delta = timedelta(hours=last_route_expected_hours)
             last_route_end_date = last_route_start_date + last_route_delta
 
             if last_route_end_date < new_route_start_date:
                 return True
             else:
-                raise ValueError(f"Vehicle not available before {last_route_end_date}")
+                print(f"Vehicle not available before {last_route_end_date}")
+                return False
         else:
             return True
 
     def check_matching_locations(self, new_route):
+        """Checks if the route start location is the truck current location"""
         if len(self._routes) > 0:
             last_route = self._routes[-1]
-            if last_route.locations[-1] == new_route.locations[0]:
+            if last_route.locations[-1].name == new_route.locations[0].name:
                 return True
             else:
-                raise ValueError(f"Can't assign new route. Route must stast from {last_route.locations[-1]}")
+                raise ValueError(f"Can't assign new route. Route must start from {last_route.locations[-1].name}")
         else:
             return True
 
@@ -185,8 +167,7 @@ class Vehicle:
             self._routes.append(new_route)
             self._truck_range -= len(new_route)
 
-            print(f"{new_route} added to {self._name} ID: {self._id_truck}")
-
+            print(f"Route {new_route.route_id} added to {self._name} ID: {self._id_truck}")
 
     def update_capacity(self, package_weight: float):
         if package_weight <= 0:
@@ -194,7 +175,7 @@ class Vehicle:
         if package_weight > self._capacity:
             raise ValueError(f"Free capacity of vehicle: {self.capacity:_}kg can't load {package_weight:_}kg")
 
-        self._capacity = self._capacity - package_weight
+        self._capacity -= package_weight
 
     def update_range(self, distance):
         if distance <= 0:
@@ -209,29 +190,23 @@ class Vehicle:
         self._capacity = self._initial_capacity
         self._truck_range = self._initial_range
         print(f"Vehicle ID: {self._id_truck} has been reset.")
-    # def change_status(self):
-    #     if self._current_status == "Free":
-    #         self._current_status = "In transit"
-    #     else:
-    #         self._current_status = "Free"
 
     def __str__(self):
         return (
-            f"{self.name} ID:--{self.id_truck}-- "
-            f"location: {self.track_location()}, "
-            f"route: {self.find_active_route()}, "
-            f"capacity left: {self.capacity:_}_kg, "
-            f"range to go: {self.truck_range:_}_km"
+            f"{self.name} ID:--{self.id_truck}--\n"
+            f"location: {self.track_location()}\n"
+            f"route: {self.find_active_route()}\n"
+            f"capacity left: {self.capacity}kg\n"
+            f"range to go: {self.truck_range}km"
         )
-
-#will move to app_data
+# will move to app_data
 # all_vehicles: list[Vehicle] = []
 # for fleet in Vehicle.vehicle_park.values():
 #     for n in range(fleet["units"]):
 #         new_truck = Vehicle(fleet["name"], fleet["capacity"], fleet["range"])
 #         all_vehicles.append(new_truck)
-
+#
 # print("------ All vehicles are ready to go ------") #optional, something like system check/the creation is successful.
-
+#
 # for each in all_vehicles:
 #     print(str(each))

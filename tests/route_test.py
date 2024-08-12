@@ -1,10 +1,11 @@
 from datetime import datetime
+from models.location import Location
 from unittest import TestCase
 from models.route import Route
 from tests.mock_objects import mock_location, mock_package
 
 VALID_ROUTE_ID = 1111
-VALID_ROUTE_DEPARTURE_TIME = '10-08-2024 10:45'
+VALID_ROUTE_DEPARTURE_TIME = datetime(2024, 8, 10, 10, 45)
 
 
 class TestRoute(TestCase):
@@ -15,20 +16,24 @@ class TestRoute(TestCase):
         self.location4 = mock_location('MEL')
         self.location5 = mock_location('BRI')
         self.package1 = mock_package()
-        self.package1.start_location = self.location1
-        self.package1.end_location = self.location5
+        self.package1.start_location = 'SYD'
+        self.package1.end_location = 'BRI'
         self.package2 = mock_package()
-        self.package2.start_location = self.location2
-        self.package2.end_location = self.location4
+        self.package2.start_location = 'PER'
+        self.package2.end_location = 'MEL'
         self.package3 = mock_package()
-        self.package3.start_location = self.location3
-        self.package3.end_location = self.location5
-        self.route = Route(VALID_ROUTE_ID, [self.location1, self.location2, self.location3],
+        self.package3.start_location = 'DAR'
+        self.package3.end_location = 'BRI'
+        self.route = Route(VALID_ROUTE_ID, ['SYD', 'PER', 'DAR'],
                            VALID_ROUTE_DEPARTURE_TIME)
 
     def testInitialiser_InitialisesSuccessfully(self):
         self.assertEqual(self.route.route_id, VALID_ROUTE_ID)
-        self.assertEqual(self.route.locations, [self.location1, self.location2, self.location3])
+        for a_location in self.route.locations:
+            self.assertIsInstance(a_location, Location)
+        self.assertEqual(self.route.locations[0].name, 'SYD')
+        self.assertEqual(self.route.locations[1].name, 'PER')
+        self.assertEqual(self.route.locations[2].name, 'DAR')
         self.assertEqual(self.route.departure_time, VALID_ROUTE_DEPARTURE_TIME)
         self.assertIsInstance(self.route, Route)
 
@@ -41,7 +46,7 @@ class TestRoute(TestCase):
         self.assertEqual(self.route.calculate_arrival_times(), expected_arrival_times)
 
     def testCalculateNextStop_WorksCorrectly(self):
-        self.assertEqual(self.route.next_stop(self.location2), self.location3)
+        self.assertEqual(self.route.next_stop('SYD'), 'PER')
 
     def testNextStop_InvalidLocation_(self):
         with self.assertRaisesRegex(ValueError, "Current location MEL not on route."):
@@ -49,8 +54,11 @@ class TestRoute(TestCase):
 
     def testUpdateCurrentLocationsForPackages_UpdatesSuccessfully(self):
         self.route.update_locations_for_packages([self.package1, self.package2, self.package3])
-        self.assertEqual(self.route.locations, [self.location1, self.location2, self.location3, self.location5,
-                                                self.location4])
+        self.assertEqual(self.route.locations[0].name, 'SYD')
+        self.assertEqual(self.route.locations[1].name, 'PER')
+        self.assertEqual(self.route.locations[2].name, 'DAR')
+        self.assertEqual(self.route.locations[3].name, 'BRI')
+        self.assertEqual(self.route.locations[4].name, 'MEL')
 
     def testStr_ReturnsCorrectFormat(self):
         expected = (f'Route ID: 1111, Locations: SYD (10-08-2024 10:45), PER (12-08-2024 08:54), '

@@ -1,35 +1,8 @@
-from datetime import timedelta, datetime
-import random
+from datetime import datetime, timedelta
 
 from core.application_data import ApplicationData
-from models.location import Location
 from models.manager import Manager
-from models.route import Route
 from models.user import User
-
-from core.command_factory import CommandFactory
-from core.engine import Engine
-
-
-# app_data = ApplicationData()
-# cmd_factory = CommandFactory(app_data)
-# engine = Engine(cmd_factory)
-#
-# engine.start()
-#
-
-
-
-
-
-
-
-
-
-
-# Helper function to format datetime
-def format_datetime(dt):
-    return dt.strftime("%Y-%m-%d %H:%M")
 
 # Set up the application data
 app_data = ApplicationData()
@@ -38,51 +11,56 @@ app_data = ApplicationData()
 manager = Manager(user_id="mgr001", name="Alice", contact_info="alice@example.com", application_data=app_data)
 
 # Add trucks
-truck1 = manager.add_truck("Scania", "SYD")
-truck2 = manager.add_truck("Man", "MEL")
+truck_models = ["Scania", "Man", "Actros"]
+home_bases = ["SYD", "MEL", "ADL", "BRI", "PER"]
 
-# Create packages
-package1 = manager.create_package("SYD", "MEL", 10000, "john@example.com")
-package2 = manager.create_package( "MEL", "ADL", 5000, "jane@example.com")
-package3 = manager.create_package( "SYD", "ADL", 15000, "bob@example.com")
+trucks = [manager.add_truck(model, base) for model in truck_models for base in home_bases]
 
-# Create routes and assign them to trucks
-departure_time1 = datetime.now() + timedelta(hours=1)  # 1 hour from now
-route1 = manager.create_route("R001", ["SYD", "MEL", "ADL"], departure_time1)
-manager.assign_route_to_truck(truck1, route1)
+# Create a user
+user = User(user_id="user001", name="John Doe", contact_info="john.doe@example.com")
 
-departure_time2 = datetime.now() + timedelta(hours=2)  # 2 hours from now
-route2 = manager.create_route("R002", ["MEL", "ADL"], departure_time2)
-manager.assign_route_to_truck(truck2, route2)
+# User orders packages
+user.order_package("SYD", "MEL", 10000, app_data)
+user.order_package("MEL", "ADL", 5000, app_data)
+user.order_package("SYD", "ADL", 15000, app_data)
 
-# Track packages
-def track_package(package_id):
-    package = app_data.find_package_by_id(package_id)
-    if package:
-        current_route = app_data.find_route_for_package(package_id)
-        if current_route and current_route.truck:
-            current_location = current_route.truck.track_location(datetime.now())
-            arrival_times = current_route.calculate_arrival_times()
+# Create and assign routes
+route_data = [
+    ("R001", ["SYD", "MEL", "ADL"], 1),
+    ("R002", ["MEL", "ADL", "PER"], 2),
+    ("R003", ["ADL", "PER", "SYD"], 3),
+    ("R004", ["PER", "SYD", "BRI"], 4),
+    ("R005", ["SYD", "BRI", "DAR"], 5),
+    ("R006", ["BRI", "DAR", "PER"], 6),
+    ("R007", ["DAR", "PER", "SYD"], 7),
+    ("R008", ["PER", "SYD", "MEL"], 8),
+    ("R009", ["SYD", "MEL", "ASP"], 9),
+    ("R010", ["MEL", "ASP", "SYD"], 10),
+    ("R011", ["ASP", "SYD", "ADL"], 11),
+    ("R012", ["SYD", "ADL", "BRI"], 12),
+    ("R013", ["ADL", "BRI", "PER"], 13),
+    ("R014", ["BRI", "PER", "MEL"], 14),
+    ("R015", ["PER", "MEL", "DAR"], 15),
+    ("R016", ["MEL", "DAR", "SYD"], 16),
+    ("R017", ["DAR", "SYD", "ADL"], 17),
+    ("R018", ["SYD", "ADL", "PER"], 18),
+    ("R019", ["ADL", "PER", "BRI"], 19),
+    ("R020", ["PER", "BRI", "SYD"], 20)
+]
 
-            print(f"Package ID: {package.id}")
-            print(f"Weight: {package.weight} kg")
-            print(f"Start Point: {package.start_location}")
-            print(f"End Point: {package.end_location}")
-            print(f"Current Location: {current_location}")
-            print(f"Route ID: {current_route.route_id}")
-            print("Route Details:")
-            for loc, arrival in zip(current_route.locations, arrival_times):
-                print(f" - {loc}: Expected Arrival at {format_datetime(arrival)}")
-            print("-" * 40)
-        else:
-            print(f"Package {package_id} is not currently on a route.")
-    else:
-        print(f"Package {package_id} not found.")
+for route_id, locations, hours in route_data:
+    departure_time = datetime.now() + timedelta(hours=hours)
+    route = manager.create_route(route_id, locations, departure_time)
+    suitable_truck = trucks[route_data.index((route_id, locations, hours)) % len(trucks)]
+    manager.assign_route_to_truck(suitable_truck, route)
 
-# Print information for all packages
-track_package("PKG001")
-track_package("PKG002")
-track_package("PKG003")
+# User tracks packages
+for package in user.ordered_packages:
+    user.track_package(package._package_id, app_data)
 
 # Print status of all routes
 manager.get_routes_status()
+
+# Simulate each truck's route
+for truck in trucks:
+    truck.simulate_route()

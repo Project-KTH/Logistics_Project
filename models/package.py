@@ -2,6 +2,7 @@
 import random
 import string
 
+
 class Package:
 
     id_list = []
@@ -10,7 +11,7 @@ class Package:
         self._start_location = start_location
         self._end_location = end_location
         self.weight = weight
-        self.customer_info = contact_info
+        self.contact_info = contact_info
         self._package_id = self.generate_id()
 
     # def validate_id(self, value):
@@ -43,7 +44,7 @@ class Package:
     
     @weight.setter
     def weight(self, value):
-        if not value:
+        if value == '':
             raise ValueError('Weight cannot be empty')
         elif not isinstance(value, (float, int)):
             raise ValueError('Weight must be a number')
@@ -65,7 +66,7 @@ class Package:
     #     return distance
 
     def generate_id(self):
-
+        """Generates unique ID for each package"""
         letters = string.ascii_uppercase
         numbers = string.digits
 
@@ -79,12 +80,11 @@ class Package:
                 self.id_list.append(the_id)
                 return the_id
 
-
     def __str__(self) -> str:
         return (
             f'Package ID: {self._package_id}\n'
             f'Weight: {self.weight}kg\n'
             f'From: {self.start_location}\n'
             f'To: {self.end_location}\n'
-            f'Customer: {self.customer_info}\n'
+            f'Customer: {self.contact_info}\n'
         )

@@ -15,3 +15,6 @@ class Location:
         if Cities.from_string(other_city) not in self.distances[self.name]:
             raise ValueError(f"No route between {self.name} and {other_city}")
         return self.distances[self.name][Cities.from_string(other_city)]
+
+    def __str__(self):
+        return f'{self.name}'

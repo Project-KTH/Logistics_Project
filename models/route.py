@@ -9,7 +9,10 @@ class Route:
         # Convert location names to Location objects
         self.route_id = route_id
         self.locations = [Location(name) for name in location_names]
-        self.departure_time = departure_time  # Ensure this is a datetime object
+        if isinstance(departure_time, datetime):
+            self.departure_time = departure_time  # Ensure this is a datetime object
+        else:
+            self.departure_time = datetime.strptime(departure_time, '%d-%m-Y %H:%M')
         self.truck = None
 
     def calculate_travel_time(self, distance):
@@ -50,9 +53,9 @@ class Route:
         for package in packages:
             start_location = Location(package.start_location)
             end_location = Location(package.end_location)
-            if start_location not in self.locations:
+            if not any(location.name == start_location.name for location in self.locations):
                 self.locations.append(start_location)
-            if end_location not in self.locations:
+            if not any(location.name == end_location.name for location in self.locations):
                 self.locations.append(end_location)
 
     def __str__(self):
@@ -68,4 +71,3 @@ class Route:
             end_location = self.locations[i + 1]
             total_distance += start_location.get_distance_to(end_location.name)
         return total_distance
-
