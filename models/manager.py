@@ -53,14 +53,6 @@ class Manager(User):
         else:
             print(f"Cannot assign route {route.route_id} to truck {truck.id_truck} due to scheduling, location, or range constraints.")
 
-    def assign_routes_to_vehicles(self):
-        """Assign routes to available vehicles based on their capacity and location."""
-        for route in self.application_data.routes:
-            if route.truck is None:  # Check if the route already has an assigned truck
-                suitable_truck = self.find_suitable_truck(route)
-                if suitable_truck:
-                    self.assign_route_to_truck(suitable_truck, route)
-
     def find_suitable_truck(self, route):
         """Find a suitable truck for a given route based on capacity and location."""
         for truck in self.application_data.vehicles:

@@ -61,6 +61,6 @@ for package in user.ordered_packages:
 # Print status of all routes
 manager.get_routes_status()
 
-# Simulate each truck's route
 for truck in trucks:
-    truck.simulate_route()
+    for route in truck._routes:
+        route.simulate_route()

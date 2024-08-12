@@ -86,40 +86,6 @@ class Vehicle:
 
         return location
 
-    def simulate_route(self):
-        """Simulate vehicle moving along its route, updating location every 3 seconds."""
-        for route in self._routes:
-            route_start_date = route.departure_time
-            current_time = route_start_date
-            print(f"Starting route simulation for vehicle {self._id_truck} on route {route.route_id}.")
-
-            for n in range(len(route.locations) - 1):
-                start_location = route.locations[n].name
-                end_location = route.locations[n + 1].name
-                route_distance = distances.distances[start_location][end_location]
-                route_duration = route_distance / Vehicle.SPEED_CONSTANT
-                route_delta = timedelta(hours=route_duration)
-
-                # Calculate an accelerated arrival time for faster simulation
-                accelerated_seconds = route_duration * 3600  # Accelerate by treating hours as seconds
-                arrival_time = current_time + timedelta(seconds=accelerated_seconds)
-                print(
-                    f"Traveling from {start_location} to {end_location}, will arrive by {arrival_time.strftime('%H:%M:%S')}")
-
-                while current_time < arrival_time:
-                    time_to_arrival = (arrival_time - current_time).total_seconds()
-                    if time_to_arrival > 3:
-                        print(f"Time: {current_time.strftime('%H:%M:%S')} - In transit to {end_location}")
-                        time.sleep(0.5)  # Sleep less time to accelerate simulation
-                        current_time += timedelta(seconds=accelerated_seconds / 10)  # Simulate a faster passage
-                    else:
-                        current_time += timedelta(seconds=time_to_arrival)
-                        break
-
-                self._current_location = end_location
-                print(f"Arrived at {end_location} at {current_time.strftime('%H:%M:%S')}.")
-
-        print(f"Route simulation for vehicle {self._id_truck} completed.")
 
     def check_schedule(self, new_route):
         if len(self._routes) > 0:

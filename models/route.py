@@ -1,8 +1,10 @@
 from datetime import timedelta, datetime
+
+from helpers.distances import distances
 from models.location import Location
 from models.vehicle import Vehicle
 from models.location import Location
-
+import time
 
 class Route:
     def __init__(self, route_id, location_names, departure_time):
@@ -57,6 +59,38 @@ class Route:
                 self.locations.append(start_location)
             if not any(location.name == end_location.name for location in self.locations):
                 self.locations.append(end_location)
+
+
+    def simulate_route(self):
+        """Simulate vehicle moving along its route, updating location every 3 seconds."""
+        current_time = self.departure_time
+        print(f"Starting route simulation for route {self.route_id}.")
+
+        for n in range(len(self.locations) - 1):
+            start_location = self.locations[n].name
+            end_location = self.locations[n + 1].name
+            route_distance = distances[start_location][end_location]
+            route_duration = route_distance / Vehicle.SPEED_CONSTANT
+            accelerated_seconds = route_duration * 3600  # Accelerate by treating hours as seconds
+            arrival_time = current_time + timedelta(seconds=accelerated_seconds)
+            print(
+                f"Traveling from {start_location} to {end_location}, will arrive by {arrival_time.strftime('%H:%M:%S')}"
+            )
+
+            while current_time < arrival_time:
+                time_to_arrival = (arrival_time - current_time).total_seconds()
+                if time_to_arrival > 3:
+                    print(f"Time: {current_time.strftime('%H:%M:%S')} - In transit to {end_location}")
+                    time.sleep(0.5)  # Sleep less time to accelerate simulation
+                    current_time += timedelta(seconds=accelerated_seconds / 10)  # Simulate a faster passage
+                else:
+                    current_time += timedelta(seconds=time_to_arrival)
+                    break
+
+            print(f"Arrived at {end_location} at {current_time.strftime('%H:%M:%S')}.")
+
+        print(f"Route simulation for route {self.route_id} completed.")
+
 
     def __str__(self):
         arrival_times = self.calculate_arrival_times()
