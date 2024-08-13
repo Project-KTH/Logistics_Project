@@ -1,17 +1,55 @@
+from datetime import datetime
 from unittest import TestCase
 from models.manager import Manager
 from models.package import Package
 from models.vehicle import Vehicle
-from tests.mock_objects import mock_application_data, mock_package, mock_vehicle
+from tests.mock_objects import mock_application_data, mock_package, mock_vehicle, mock_location, mock_route
 
 
 class TestManager(TestCase):
     def setUp(self):
+
+        self.sydney = mock_location('SYD')
+        self.perth = mock_location('PER')
+        self.brisbane = mock_location('BRI')
+        self.alice_springs = mock_location('ASP')
+        self.melbourne = mock_location('MEL')
+        self.darwin = mock_location('DAR')
+        self.adelaide = mock_location('ADL')
+
         self.test_application_data = mock_application_data()
         self.manager = Manager(1000, 'manager', 'contact info', self.test_application_data)
+
         self.package1 = mock_package('SYD', 'PER', 4.5, 'customer_info')
         self.package1._package_id = 'FR4567'
+
+        self.route1 = mock_route()
+        self.route1.route_id = 1000
+        self.route1.locations = [self.melbourne, self.brisbane]
+
+        self.route2 = mock_route()
+        self.route2.route_id = 1001
+        self.route2.locations = [self.alice_springs, self.darwin]
+        self.route2.departure_time = datetime.strptime('11-05-2024 03:34', '%d-%m-%Y %H:%M')
+
+        self.route3 = mock_route()
+        self.route3.route_id = 1002
+        self.route3.locations = [self.sydney, self.adelaide]  # Route from Sydney to Adelaide
+        self.route3.departure_time = datetime.strptime('01-05-2024 08:00', '%d-%m-%Y %H:%M')
+
+        self.route4 = mock_route()
+        self.route4.route_id = 1003
+        self.route4.locations = [self.adelaide, self.sydney]
+        self.route4.departure_time = datetime.strptime('14-12-2024 06:00', '%d-%m-%Y %H:%M')
+
         self.truck = mock_vehicle('Truck', 10000, 10000, truck_id=2000)
+        self.truck._routes = [self.route2]
+
+        self.truck2 = mock_vehicle('Truck2', 100000, 10000, truck_id=3000)
+        self.truck2._current_location = self.melbourne
+
+        self.truck4 = mock_vehicle('Truck4', 15000, 2000, truck_id=5000)
+        self.truck4._routes = [self.route3]
 
     def testInitialiser_InitialisesOK(self):
         self.assertEqual(self.manager.access_level, 'basic')
@@ -50,3 +88,16 @@ class TestManager(TestCase):
         self.truck.capacity, self.truck.truck_range = 1, 1
         self.manager.reset_truck(2000)
         self.truck.capacity, self.truck.truck_range = 10000, 10000
+
+    def testAssignRouteToTruck_AvailableTruck_OK(self):
+        self.manager.assign_route_to_truck(self.truck2, self.route1)
+        self.assertEqual(self.route1.truck, self.truck2)
+
+    def testAssignRouteToTruck_UnavailableTruck_DoesNothing(self):
+        self.manager.assign_route_to_truck(self.truck, self.route2)
+        self.assertEqual(self.route2.truck, None)
+
+    def testFindSuitableTruck_OK(self):
+        self.test_application_data.vehicles.extend([
+            self.truck, self.truck2, self.truck4])
+        self.manager.find_suitable_truck(self.route4)

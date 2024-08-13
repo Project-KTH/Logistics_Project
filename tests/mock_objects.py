@@ -50,6 +50,7 @@ def mock_location(name):
 def mock_route():
     route = MagicMock(spec=Route)
     route.locations = []
+    route.truck = None
 
 
     def calculate_travel_time(distance):
