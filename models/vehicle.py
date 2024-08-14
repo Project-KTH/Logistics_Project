@@ -1,10 +1,13 @@
 from datetime import timedelta, datetime, date
 from helpers import distances
 import time
+import random
+import string
 
+from helpers.functions import generate_id
 
 class Vehicle:
-    id_vehicle = 1001  # Class variable
+    id_all_vehicles = set()  # Class variable
 
     SPEED_CONSTANT = 87
 
@@ -20,8 +23,9 @@ class Vehicle:
         self._truck_range = truck_range
         self._initial_capacity = capacity  # Initial capacity to reset to full capacity
         self._initial_range = truck_range  # To reset truck range
-        self._id_truck = Vehicle.id_vehicle
-        Vehicle.id_vehicle += 1
+
+        self._id_truck = generate_id(4, 4, existing_ids=Vehicle.id_all_vehicles)
+        Vehicle.id_all_vehicles.add(self._id_truck)
         self._routes = []  # List of all routes for a truck.
         self._current_location = "Garage"
 
@@ -99,8 +103,8 @@ class Vehicle:
             if last_route_end_date < new_route_start_date:
                 return True
             else:
-                print(f"Vehicle not available before {last_route_end_date}")
-                return False
+                raise ValueError(f"Vehicle not available before {last_route_end_date}")
+                
         else:
             return True
 
@@ -116,23 +120,29 @@ class Vehicle:
             return True
 
     def check_remaining_range(self, new_route):
-        if self._initial_range == self._truck_range and self._initial_range > len(new_route):
-            return True
-        if self._truck_range > len(new_route):
+        if self._initial_range >= len(new_route):
             return True
         else:
             raise ValueError(f"Range not enough to cover {len(new_route)} km")
+    
+    # 
+    # def check_remaining_range(self, new_route):
+    #     if self._initial_range == self._truck_range and self._initial_range > len(new_route):
+    #         return True
+    #     if self._truck_range > len(new_route):
+    #         return True
+    #     else:
+    #         raise ValueError(f"Range not enough to cover {len(new_route)} km")
 
     def assign_route(self, new_route):
-        available = self.check_schedule(new_route)
-        location = self.check_matching_locations(new_route)
-        has_range = self.check_remaining_range(new_route)
+        self.check_schedule(new_route)
+        self.check_matching_locations(new_route)
+        self.check_remaining_range(new_route)
+    
+        self._routes.append(new_route)
+        # self._truck_range -= len(new_route)
 
-        if all([available, location, has_range]):
-            self._routes.append(new_route)
-            self._truck_range -= len(new_route)
-
-            print(f"Route {new_route.route_id} added to {self._name} ID: {self._id_truck}")
+        print(f"Route {new_route.route_id} added to {self._name} ID: {self._id_truck}")
 
     def update_capacity(self, package_weight: float):
         if package_weight <= 0:
@@ -142,18 +152,18 @@ class Vehicle:
 
         self._capacity -= package_weight
 
-    def update_range(self, distance):
-        if distance <= 0:
-            raise ValueError("Distance is expected to be a positive value")
-        if distance > self._truck_range:
-            raise ValueError(f"Remaining range is not enough for distance {distance} km")
+    # def update_range(self, distance):
+    #     if distance <= 0:
+    #         raise ValueError("Distance is expected to be a positive value")
+    #     if distance > self._truck_range:
+    #         raise ValueError(f"Remaining range is not enough for distance {distance} km")
 
-        self._truck_range -= distance
+    #     self._truck_range -= distance
 
     def reset(self):
         """Reset the truck's capacity and range to initial values."""
         self._capacity = self._initial_capacity
-        self._truck_range = self._initial_range
+        self._truck_range = self._initial_range # not needed now.
         print(f"Vehicle ID: {self._id_truck} has been reset.")
 
     def __str__(self):
@@ -164,14 +174,3 @@ class Vehicle:
             f"capacity left: {self.capacity}kg\n"
             f"range to go: {self.truck_range}km"
         )
-# will move to app_data
-# all_vehicles: list[Vehicle] = []
-# for fleet in Vehicle.vehicle_park.values():
-#     for n in range(fleet["units"]):
-#         new_truck = Vehicle(fleet["name"], fleet["capacity"], fleet["range"])
-#         all_vehicles.append(new_truck)
-#
-# print("------ All vehicles are ready to go ------") #optional, something like system check/the creation is successful.
-#
-# for each in all_vehicles:
-#     print(str(each))
