@@ -1,21 +1,26 @@
 from datetime import timedelta, datetime
 
 from helpers.distances import distances
+from helpers.functions import generate_id
 from models.location import Location
 from models.vehicle import Vehicle
 from models.location import Location
 import time
 
 class Route:
-    def __init__(self, route_id, location_names, departure_time):
+    def __init__(self, location_names, departure_time):
         # Convert location names to Location objects
-        self.route_id = route_id
+        self._package_id = generate_id()
         self.locations = [Location(name) for name in location_names]
         if isinstance(departure_time, datetime):
             self.departure_time = departure_time  # Ensure this is a datetime object
         else:
             self.departure_time = datetime.strptime(departure_time, '%d-%m-Y %H:%M')
         self.truck = None
+
+    @property
+    def id(self):
+        return self._package_id
 
     def calculate_travel_time(self, distance):
         """Calculate travel time based on distance and vehicle speed."""

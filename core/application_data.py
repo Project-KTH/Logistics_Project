@@ -75,3 +75,4 @@ class ApplicationData:
             contact_info = f"{name}@gmail.com"
             new_user = User(user_id, name, contact_info)
             self.users.append(new_user)
+

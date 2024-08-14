@@ -1,3 +1,7 @@
+import random
+import string
+
+
 def find_suitable_truck(trucks, start_location, required_capacity):
     for truck in trucks:
         if truck.current_location == start_location and truck.current_capacity >= required_capacity and truck.available:
@@ -25,3 +29,20 @@ distances = {
         'PER': {'SYD': 4016, 'MEL': 3509, 'ADL': 2785, 'ASP': 2481, 'BRI': 4311, 'DAR': 4025, 'PER': 0},
     }
 
+
+
+def generate_id(num_letters=2, num_digits=4, existing_ids=None):
+    """Generates unique ID for each package"""
+    if existing_ids is None:
+        existing_ids = []
+
+    letters = string.ascii_uppercase
+    numbers = string.digits
+
+    while True:
+        first_two_characters = ''.join(random.choices(letters, k=num_letters))
+        rest_characters = ''.join(random.choices(numbers, k=num_digits))
+        the_id = first_two_characters + rest_characters
+
+        if the_id not in existing_ids:
+            return the_id

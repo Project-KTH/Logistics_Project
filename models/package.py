@@ -1,6 +1,7 @@
-# from models.location import Location
 import random
 import string
+
+from helpers.functions import generate_id
 
 
 class Package:
@@ -12,7 +13,7 @@ class Package:
         self._end_location = end_location
         self.weight = weight
         self.customer_info = customer_info
-        self._package_id = self.generate_id()
+        self._package_id = generate_id(existing_ids=self.id_list)
 
     # def validate_id(self, value):
     #     if not value.isalnum():
