@@ -2,6 +2,7 @@ from datetime import timedelta, datetime
 from unittest.mock import Mock, PropertyMock, MagicMock
 
 from helpers.distances import distances
+from helpers.functions import generate_id
 from models.constants.location_constants import Cities
 from models.location import Location
 from models.route import Route
@@ -52,7 +53,7 @@ def mock_route():
     route.locations = []
     route.truck = None
 
-
+    route.departure_time = datetime(2024, 8, 10, 10, 00)
     def calculate_travel_time(distance):
         average_speed = Vehicle.SPEED_CONSTANT
         return distance / average_speed
@@ -104,7 +105,7 @@ def mock_route():
     def custom_str():
         arrival_times = route.calculate_arrival_times()
         stops_with_times = ', '.join(f"{loc} ({time})" for loc, time in zip(route.locations, arrival_times))
-        return f"Route ID: {route.route_id}, Locations: {stops_with_times}, Truck ID: {route.truck.id_truck if route.truck else 'No truck assigned'}"
+        return f"Route ID: {route.id}, Locations: {stops_with_times}, Truck ID: {route.truck.id_truck if route.truck else 'No truck assigned'}"
 
     route.__str__.side_effect = custom_str
 
@@ -187,7 +188,7 @@ def mock_application_data():
             user_id = 1000 + n
             name = "Test_User_0" + str(n)
             contact_info = f"{name}@gmail.com"
-            new_user = User(user_id, name, contact_info)
+            new_user = User(name, contact_info, "password")
             application_data.users.append(new_user)
 
     application_data.init_users.side_effect = init_users
@@ -204,7 +205,7 @@ def mock_vehicle(name, capacity, truck_range, truck_id=None):
     vehicle._initial_capacity = capacity
     vehicle._initial_range = truck_range
     vehicle._routes = []
-    vehicle._id_truck = truck_id
+    vehicle._id_truck = truck_id if truck_id else generate_id(4, 4)  # Ensure truck ID is set
     vehicle._current_location = 'Garage'
 
     type(vehicle).id_truck = PropertyMock(return_value=vehicle._id_truck)
@@ -309,29 +310,19 @@ def mock_vehicle(name, capacity, truck_range, truck_id=None):
             vehicle._routes.append(new_route)
             vehicle._truck_range -= len(new_route)
 
-            print(f"Route {new_route.route_id} added to {vehicle._name} ID: {vehicle._id_truck}")
+            print(f"Route {new_route.id} added to {vehicle._name} ID: {vehicle.id_truck}")
 
     vehicle.assign_route.side_effect = assign_route
 
     def update_capacity(package_weight: float):
         if package_weight <= 0:
             raise ValueError("Package weight is expected to be a positive value")
-        if package_weight > self._capacity:
-            raise ValueError(f"Free capacity of vehicle: {vehicle.capacity:_}kg can't load {package_weight:_}kg")
+        if package_weight > vehicle._capacity:
+            raise ValueError(f"Free capacity of vehicle: {vehicle.capacity}kg can't load {package_weight}kg")
 
         vehicle._capacity -= package_weight
 
     vehicle.update_capacity.side_effect = update_capacity
-
-    def update_range(distance):
-        if distance <= 0:
-            raise ValueError("Distance is expected to be a positive value")
-        if distance > vehicle._truck_range:
-            raise ValueError(f"Remaining range is not enough for distance {distance} km")
-
-        vehicle._truck_range -= distance
-
-    vehicle.update_range.side_effect = update_range
 
     def reset():
         """Reset the truck's capacity and range to initial values."""
@@ -354,22 +345,21 @@ def mock_vehicle(name, capacity, truck_range, truck_id=None):
 
     return vehicle
 
-
 def mock_user(user_id, name, contact_info, role='basic'):
     user = MagicMock(spec = User)
     user.name = name
-    user.user_id = user_id
+    user.id = user_id
     user.contact_info = contact_info
     user.role = role
 
     def update_contact_info(new_contact_info):
         user.contact_info = new_contact_info
-        print(f"Contact information for user {user.user_id} updated.")
+        print(f"Contact information for user {user.id} updated.")
 
     user.update_contact_info.side_effect = update_contact_info
 
     def custom_str():
-        return f"User ID: {user.user_id}, Name: {user.name}, Role: {user.role}, Contact Info: {user.contact_info}"
+        return f"User ID: {user.id}, Name: {user.name}, Role: {user.role}, Contact Info: {user.contact_info}"
 
     user.__str__.side_effect = custom_str
 
@@ -377,7 +367,7 @@ def mock_user(user_id, name, contact_info, role='basic'):
         package = Package(start_location, end_location, weight, user.contact_info)
         application_data.packages.append(package)
         user.ordered_packages.append(package)
-        print(f"Package {package._package_id} ordered by user {user.user_id}.")
+        print(f"Package {package.id} ordered by user {user.id}.")
 
     user.order_package.side_effect = order_package
 

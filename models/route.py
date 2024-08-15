@@ -8,20 +8,32 @@ from models.location import Location
 import time
 
 class Route:
-    def __init__(self, location_names, departure_time):
-        # Convert location names to Location objects
-        self._package_id = generate_id()
-        self.locations = [Location(name) for name in location_names]
+    id_list = []
+
+    def __init__(self, packages, departure_time):
+        self._route_id = generate_id(existing_ids=self.id_list)
+        self.locations = self.generate_locations_from_packages(packages)
         if isinstance(departure_time, datetime):
-            self.departure_time = departure_time  # Ensure this is a datetime object
+            self.departure_time = departure_time
         else:
             self.departure_time = datetime.strptime(departure_time, '%d-%m-Y %H:%M')
         self.truck = None
 
     @property
     def id(self):
-        return self._package_id
+        return self._route_id
 
+    def generate_locations_from_packages(self, packages):
+        """Generate a list of unique locations based on package start and end points."""
+
+        location_order = []
+        for package in packages:
+            if package.start_location not in location_order:
+                location_order.append(package.start_location)
+            if package.end_location not in location_order:
+                location_order.append(package.end_location)
+
+        return [Location(name) for name in location_order]
     def calculate_travel_time(self, distance):
         """Calculate travel time based on distance and vehicle speed."""
         average_speed = Vehicle.SPEED_CONSTANT
@@ -69,7 +81,7 @@ class Route:
     def simulate_route(self):
         """Simulate vehicle moving along its route, updating location every 3 seconds."""
         current_time = self.departure_time
-        print(f"Starting route simulation for route {self.route_id}.")
+        print(f"Starting route simulation for route {self.id}.")
 
         for n in range(len(self.locations) - 1):
             start_location = self.locations[n].name
@@ -94,13 +106,13 @@ class Route:
 
             print(f"Arrived at {end_location} at {current_time.strftime('%H:%M:%S')}.")
 
-        print(f"Route simulation for route {self.route_id} completed.")
+        print(f"Route simulation for route {self.id} completed.")
 
 
     def __str__(self):
         arrival_times = self.calculate_arrival_times()
         stops_with_times = ', '.join(f"{loc.name} ({time})" for loc, time in zip(self.locations, arrival_times))
-        return f"Route ID: {self.route_id}, Locations: {stops_with_times}, Truck ID: {self.truck.id_truck if self.truck else 'No truck assigned'}"
+        return f"Route ID: {self.id}, Locations: {stops_with_times}, Truck ID: {self.truck.id_truck if self.truck else 'No truck assigned'}"
 
     def __len__(self):
         """Calculate the total length of the route."""

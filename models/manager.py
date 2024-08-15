@@ -5,16 +5,16 @@ from models.vehicle import Vehicle
 from datetime import datetime
 
 class Manager(User):
-    def __init__(self, user_id, name, contact_info, application_data, access_level='basic'):
-        super().__init__(user_id, name, contact_info, role='manager')
+    def __init__(self, name, contact_info, password, application_data, access_level='basic'):
+        super().__init__(name, contact_info, password, role='manager')
         self.application_data = application_data
-        self.access_level = access_level  # Differentiates permissions among managers
+        self.access_level = access_level
 
     # Package Management
     def create_package(self, start_location, end_location, weight, customer_info):
         new_package = Package(start_location, end_location, weight, customer_info)
         self.application_data.packages.append(new_package)
-        print(f"Package {new_package._package_id} created.")
+        print(f"Package {new_package.id} created.")
         return new_package
 
     def delete_package(self, package_id):
@@ -49,24 +49,41 @@ class Manager(User):
         if truck.check_schedule(route) and truck.check_matching_locations(route) and truck.check_remaining_range(route):
             truck.assign_route(route)
             route.truck = truck
-            print(f"Truck {truck.id_truck} assigned to route {route.route_id}.")
+            print(f"Truck {truck.id_truck} assigned to route {route.id}.")
         else:
-            print(f"Cannot assign route {route.route_id} to truck {truck.id_truck} due to scheduling, location, or range constraints.")
+            print(f"Cannot assign route {route.id} to truck {truck.id_truck} due to scheduling, location, or range constraints.")
 
     def find_suitable_truck(self, route):
         """Find a suitable truck for a given route based on capacity and location."""
         for truck in self.application_data.vehicles:
             if truck.track_location(datetime.now()) == route.locations[0] and truck.capacity >= sum(pkg.weight for pkg in self.application_data.packages):
                 return truck
-        print(f"No suitable truck found for route {route.route_id}.")
+        print(f"No suitable truck found for route {route.id}.")
         return None
 
-    # Route Management
-    def create_route(self, route_id, locations, departure_time):
-        new_route = Route(route_id, locations, departure_time)
+        # Route Management
+
+    def create_route(self, locations=None, departure_time=None):
+        """
+        Create a route. If `locations` is provided, use it. Otherwise, generate locations based on packages.
+        """
+        if not locations:  #
+            locations = self.generate_locations_from_packages(self.application_data.packages)
+
+        if not departure_time:
+            departure_time = datetime.now()
+
+        new_route = Route(locations, departure_time)
         self.application_data.routes.append(new_route)
-        print(f"Route {route_id} created.")
+        print(f"Route {new_route.id} created.")
         return new_route
+
+    def generate_locations_from_packages(self, packages):
+        unique_locations = set()
+        for package in packages:
+            unique_locations.add(package.start_location)
+            unique_locations.add(package.end_location)
+        return list(unique_locations)
 
     def get_routes_status(self):
         """Get the status of all delivery routes in progress."""
@@ -82,15 +99,6 @@ class Manager(User):
                 print(f"Delivery Weight: {delivery_weight} kg")
                 print(f"Current Location: {current_stop}")
                 print("-" * 40)
-
-    # User Management
-    def add_user(self, user_id, name, contact_info, role):
-        if role.lower() == "manager":
-            new_user = Manager(user_id, name, contact_info, self.application_data, "basic")
-        else:
-            new_user = User(user_id, name, contact_info)
-        self.application_data.users.append(new_user)
-        print(f"User {user_id} added with role {role}.")
 
     def remove_user(self, user_id):
         user = self.application_data.find_user_by_id(user_id)

@@ -5,14 +5,17 @@ from tests.mock_objects import mock_application_data, mock_package, mock_locatio
 from unittest.mock import patch
 from io import StringIO
 
-
-VAlID_USER_ID = 1000
 VALID_USER_NAME = 'User'
 VALID_USER_CONTACT_INFO = 'contact info'
-
+VALID_USER_PASSWORD = 'password123'
 
 class TestUser(TestCase):
-    def setUp(self):
+
+    @patch('helpers.functions.generate_id', return_value=1000)
+    def setUp(self, mock_generate_id):
+        self.user = User(VALID_USER_NAME, VALID_USER_CONTACT_INFO, VALID_USER_PASSWORD)
+        self.application_data = mock_application_data()
+
         self.package1 = mock_package("PER", 'DAR', 10.5, "user1@example.com")
         self.package1._package_id = 'PKG001'
         self.package2 = mock_package("MEL", "BRI", 5.0, "user2@example.com")
@@ -63,14 +66,15 @@ class TestUser(TestCase):
         self.route_for_package2.locations = [self.brisbane, self.perth]
         self.route_for_package2.departure_time = datetime(2024, 8, 10,  10, 00)
 
-        self.user = User(VAlID_USER_ID, VALID_USER_NAME, VALID_USER_CONTACT_INFO)
+        self.user = User(VALID_USER_NAME, VALID_USER_CONTACT_INFO, VALID_USER_PASSWORD)
         self.application_data = mock_application_data()
 
     def testInitialiser_OK(self):
-        self.assertEqual(self.user.user_id, VAlID_USER_ID)
         self.assertEqual(self.user.name, VALID_USER_NAME)
         self.assertEqual(self.user.contact_info, VALID_USER_CONTACT_INFO)
         self.assertIsInstance(self.user, User)
+        self.assertTrue(self.user.authenticate(VALID_USER_PASSWORD))  # Test password hashing
+
 
     def testUpdateContactInfo_OK(self):
         self.user.update_contact_info('New contact info')
@@ -78,7 +82,7 @@ class TestUser(TestCase):
 
     def testStr_OK(self):
         expected = (
-            f'User ID: 1000, Name: User, Role: basic, Contact Info: contact info'
+            f'User ID: {self.user.id}, Name: {VALID_USER_NAME}, Role: basic, Contact Info: {VALID_USER_CONTACT_INFO}'
         )
 
         self.assertEqual(str(self.user), expected)
@@ -90,11 +94,11 @@ class TestUser(TestCase):
         self.assertEqual(len(self.user.ordered_packages), 1)
 
         printed_output = mock_stdout.getvalue().strip()
-        self.assertEqual(printed_output, f"Package {self.user.ordered_packages[0]._package_id} ordered by user 1000.")
+        self.assertEqual(printed_output, f"Package {self.user.ordered_packages[0]._package_id} ordered by user {self.user.id}.")
 
     def testTrackPackage_NoRoute_OK(self):
         self.user.ordered_packages = [self.package1, self.package2, self.package3, self.package4]
-        self.application_data.routes = [self.route1, self.route2, self.route3, self.route4, self.route5]
+        self.application_data.routes = [mock_route() for _ in range(5)]
         self.application_data.packages = [self.package1, self.package2, self.package3, self.package4]
         self.user.track_package('RT3564', self.application_data)
 
@@ -115,10 +119,9 @@ class TestUser(TestCase):
         self.user.calculate_expected_arrival = calculate_expected_arrival
 
         self.user.ordered_packages = [self.package1, self.package2, self.package3, self.package4]
-        self.application_data.routes = [self.route1]
+        self.application_data.routes = [mock_route()]
         self.application_data.packages = [self.package1, self.package2, self.package3, self.package4]
         self.user.track_package('FY8475', self.application_data)
-
     def testCalculateExpectedArrival_OK(self):
         def calculate_expected_arrival(route, package):
             """Calculate the expected arrival time at the package's end location."""
@@ -133,6 +136,9 @@ class TestUser(TestCase):
                 raise ValueError(f"End location '{end_location}' not found in route locations.")
             return arrival_times[end_location_index]
 
-        self.user.calculate_expected_arrival = calculate_expected_arrival
-        self.assertEqual(self.user.calculate_expected_arrival(self.route1, self.package2), '13-08-2024 06:17')
+        route = mock_route()
+        route.locations = [self.melbourne, self.brisbane]  # Ensure the end location 'BRI' is in the route
+        route.departure_time = datetime(year=2024, month=8, day=12, hour=10, minute=0)
 
+        self.user.calculate_expected_arrival = calculate_expected_arrival
+        self.assertEqual(self.user.calculate_expected_arrival(route, self.package2), '13-08-2024 06:17')

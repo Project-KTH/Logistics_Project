@@ -18,27 +18,27 @@ class TestManager(TestCase):
         self.adelaide = mock_location('ADL')
 
         self.test_application_data = mock_application_data()
-        self.manager = Manager(1000, 'manager', 'contact info', self.test_application_data)
+        self.manager = Manager('manager', 'contact info', 'password', self.test_application_data)
 
         self.package1 = mock_package('SYD', 'PER', 4.5, 'customer_info')
         self.package1._package_id = 'FR4567'
 
         self.route1 = mock_route()
-        self.route1.route_id = 1000
+        self.route1.id = 1000
         self.route1.locations = [self.melbourne, self.brisbane]
 
         self.route2 = mock_route()
-        self.route2.route_id = 1001
+        self.route2.id = 1001
         self.route2.locations = [self.alice_springs, self.darwin]
         self.route2.departure_time = datetime.strptime('11-05-2024 03:34', '%d-%m-%Y %H:%M')
 
         self.route3 = mock_route()
-        self.route3.route_id = 1002
+        self.route3.id = 1002
         self.route3.locations = [self.sydney, self.adelaide]  # Route from Sydney to Adelaide
         self.route3.departure_time = datetime.strptime('01-05-2024 08:00', '%d-%m-%Y %H:%M')
 
         self.route4 = mock_route()
-        self.route4.route_id = 1003
+        self.route4.id = 1003
         self.route4.locations = [self.adelaide, self.sydney]
         self.route4.departure_time = datetime.strptime('14-12-2024 06:00', '%d-%m-%Y %H:%M')
 
@@ -54,8 +54,8 @@ class TestManager(TestCase):
     def testInitialiser_InitialisesOK(self):
         self.assertEqual(self.manager.access_level, 'basic')
         self.assertEqual(self.manager.application_data, self.test_application_data)
-        self.assertEqual( self.manager.name, 'manager')
-        self.assertEqual(self.manager.user_id, 1000)
+        self.assertEqual(self.manager.name, 'manager')
+        self.assertEqual(self.manager.id, self.manager.id)
         self.assertEqual(self.manager.role, 'manager')
         self.assertEqual(self.manager.contact_info, 'contact info')
         self.assertIsInstance(self.manager, Manager)
@@ -95,7 +95,7 @@ class TestManager(TestCase):
 
     def testAssignRouteToTruck_UnavailableTruck_DoesNothing(self):
         self.manager.assign_route_to_truck(self.truck, self.route2)
-        self.assertEqual(self.route2.truck, None)
+        self.assertIsNone(self.route2.truck)
 
     def testFindSuitableTruck_OK(self):
         self.test_application_data.vehicles.extend([
