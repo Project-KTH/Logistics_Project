@@ -9,7 +9,7 @@ from commands.order_package_command import OrderPackageCommand
 from core.application_data import ApplicationData
 
 
-
+import shlex
 
 class CommandFactory:
     def __init__(self, data: ApplicationData):
@@ -21,7 +21,7 @@ class CommandFactory:
         if not params:
             raise ValueError(f'Invalid number of arguments for {cmd}. Expected more parameters.')
 
-        params = params[0].rsplit(' ', 1)
+        params = shlex.split(params[0])
 
         # Creating the command based on input
         if cmd.lower() == "createpackage":

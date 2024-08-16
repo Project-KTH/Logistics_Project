@@ -1,3 +1,4 @@
+import shlex
 from datetime import datetime
 from commands.validation_helpers import validate_params_count
 from core.application_data import ApplicationData
@@ -11,13 +12,26 @@ class CreateRouteCommand:
         self._params = params
         self._app_data = app_data
 
+    def validate_date_format(self):
+        try:
+            datetime.strptime(self._departure_time, '%d-%m-%Y %H:%M')
+        except ValueError:
+            raise ValueError("Invalid date format. Use 'DD-MM-YYYY HH:MM'.")
+
+
     def execute(self):
         input_str, departure_time_str = self._params
 
-        try:
-            location_part = input_str.rsplit(' ', 1)[0]
-            date_part = input_str.rsplit(' ', 1)[1] + " " + departure_time_str
+        # Use shlex to correctly parse quoted strings and handle spaces
+        parsed_params = shlex.split(input_str)
+        if len(parsed_params) < 2:
+            return "Invalid location format. Ensure locations are separated by commas."
 
+        # Reconstruct location and date parts
+        location_part = ','.join(parsed_params[:-1])
+        date_part = parsed_params[-1] + " " + departure_time_str
+
+        try:
             location_names = location_part.strip().split(',')
             locations = []
             for name in location_names:
@@ -37,4 +51,3 @@ class CreateRouteCommand:
         self._app_data.routes.append(new_route)
 
         return f'Route {new_route.id} was created successfully!'
-
