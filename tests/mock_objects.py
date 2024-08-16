@@ -92,8 +92,7 @@ def mock_route():
     route.next_stop.side_effect = next_stop
 
     def update_locations_for_packages(packages):
-        """Update the route's locations to include necessary stops for the packages."""
-        # Add start and end locations for each package, ensuring order
+
         for package in packages:
             if package.start_location not in route.locations:
                 route.locations.append(package.start_location)

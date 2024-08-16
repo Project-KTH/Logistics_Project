@@ -50,16 +50,6 @@ def generate_id(num_letters=2, num_digits=4, existing_ids=None):
 
 
 def calculate_expected_arrival(route, package):
-    """
-    Calculate the expected arrival time at the package's end location.
-
-    Parameters:
-    - route: The route object containing location and arrival time information.
-    - package: The package object containing the end location.
-
-    Returns:
-    - The expected arrival time at the package's end location.
-    """
     arrival_times = route.calculate_arrival_times()
     end_location_index = route.locations.index(package.end_location)
     return arrival_times[end_location_index]

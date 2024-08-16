@@ -10,7 +10,9 @@ class CreateManagerCommand:
         self._app_data = app_data
 
     def execute(self):
-        user_id, name, contact_info = self._params
-        new_manager = Manager(user_id, name, contact_info, self._app_data)
+        # Extract parameters
+        name, contact_info, password = self._params
+        new_manager = Manager(name=name, contact_info=contact_info, password=password, application_data=self._app_data)
         self._app_data.users.append(new_manager)
-        return f'Manager {user_id} was created successfully!'
+
+        return f'Manager {new_manager.id} was created successfully!'

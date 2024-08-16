@@ -15,17 +15,6 @@ class Package:
         self.customer_info = customer_info
         self._package_id = generate_id(existing_ids=self.id_list)
 
-    # def validate_id(self, value):
-    #     if not value.isalnum():
-    #         raise ValueError('Package ID should contain letters and digits only')
-    #     elif not any(char.isdigit() for char in value):
-    #         raise ValueError('Package ID should contain at least one digit')
-    #     elif not any(char.isalpha() for char in value):
-    #         raise ValueError('Package ID should contain at least one letter')
-    #     elif len(value) < 3:
-    #         raise ValueError('Package ID should be at least 3 characters long')
-    #     else:
-    #         self._package_id = value
 
     @property
     def id(self):
@@ -61,10 +50,6 @@ class Package:
     @customer_info.setter
     def customer_info(self, value):
         self._customer_info = value
-
-    # def calculate_distance(self):
-    #     distance = self.start_location.get_distance_to(self.end_location.name)
-    #     return distance
 
     def generate_id(self):
         """Generates unique ID for each package"""

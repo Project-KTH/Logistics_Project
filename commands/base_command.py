@@ -14,5 +14,5 @@ class BaseCommand():
         return self._app_data
 
     def execute(self):
-        # override in derived classes
+
         return "Information after command is executed."

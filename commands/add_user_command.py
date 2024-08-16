@@ -10,7 +10,7 @@ class AddUserCommand:
         self._app_data = app_data
 
     def execute(self):
-        user_id, name, contact_info = self._params
-        new_user = User(user_id, name, contact_info)
+        name, contact_info, password = self._params
+        new_user = User(name=name, contact_info=contact_info, password=password)
         self._app_data.users.append(new_user)
-        return f'User {user_id} was added successfully!'
+        return f'User {new_user.id} was added successfully!'

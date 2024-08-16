@@ -10,13 +10,19 @@ import time
 class Route:
     id_list = []
 
-    def __init__(self, packages, departure_time):
+    def __init__(self, packages=None, locations=None, departure_time=None):
         self._route_id = generate_id(existing_ids=self.id_list)
-        self.locations = self.generate_locations_from_packages(packages)
+        if locations:
+            self.locations = locations
+        elif packages:
+            self.locations = self.generate_locations_from_packages(packages)
+        else:
+            raise ValueError("Either packages or locations must be provided.")
+
         if isinstance(departure_time, datetime):
             self.departure_time = departure_time
         else:
-            self.departure_time = datetime.strptime(departure_time, '%d-%m-Y %H:%M')
+            self.departure_time = datetime.strptime(departure_time, '%d-%m-%Y %H:%M')
         self.truck = None
 
     @property
@@ -24,8 +30,6 @@ class Route:
         return self._route_id
 
     def generate_locations_from_packages(self, packages):
-        """Generate a list of unique locations based on package start and end points."""
-
         location_order = []
         for package in packages:
             if package.start_location not in location_order:
@@ -34,14 +38,13 @@ class Route:
                 location_order.append(package.end_location)
 
         return [Location(name) for name in location_order]
+
     def calculate_travel_time(self, distance):
-        """Calculate travel time based on distance and vehicle speed."""
         average_speed = Vehicle.SPEED_CONSTANT
         return distance / average_speed
 
     def calculate_arrival_times(self):
-        """Calculate estimated arrival times for each location in the route."""
-        arrival_times = [self.departure_time]  # Use the departure_time directly as a datetime object
+        arrival_times = [self.departure_time]
         current_time = arrival_times[0]
 
         for i in range(len(self.locations) - 1):
@@ -53,11 +56,9 @@ class Route:
             current_time += travel_time_delta
             arrival_times.append(current_time)
 
-        # Convert datetime objects to strings in desired format
         return [time.strftime('%d-%m-%Y %H:%M') for time in arrival_times]
 
     def next_stop(self, current_location):
-        """Determine the next stop based on the current location."""
         if current_location not in [loc.name for loc in self.locations]:
             raise ValueError(f"Current location {current_location} not on route.")
 
@@ -67,8 +68,6 @@ class Route:
         return None  # No further stops
 
     def update_locations_for_packages(self, packages):
-        """Update the route's locations to include necessary stops for the packages."""
-        # Add start and end locations for each package, ensuring order
         for package in packages:
             start_location = Location(package.start_location)
             end_location = Location(package.end_location)
@@ -77,36 +76,18 @@ class Route:
             if not any(location.name == end_location.name for location in self.locations):
                 self.locations.append(end_location)
 
-
     def simulate_route(self):
-        """Simulate vehicle moving along its route, updating location every 3 seconds."""
-        current_time = self.departure_time
-        print(f"Starting route simulation for route {self.id}.")
-
         for n in range(len(self.locations) - 1):
             start_location = self.locations[n].name
             end_location = self.locations[n + 1].name
             route_distance = distances[start_location][end_location]
             route_duration = route_distance / Vehicle.SPEED_CONSTANT
-            accelerated_seconds = route_duration * 3600  # Accelerate by treating hours as seconds
+            accelerated_seconds = route_duration * 3600  # Treat hours as seconds
             arrival_time = current_time + timedelta(seconds=accelerated_seconds)
             print(
-                f"Traveling from {start_location} to {end_location}, will arrive by {arrival_time.strftime('%H:%M:%S')}"
-            )
-
-            while current_time < arrival_time:
-                time_to_arrival = (arrival_time - current_time).total_seconds()
-                if time_to_arrival > 3:
-                    print(f"Time: {current_time.strftime('%H:%M:%S')} - In transit to {end_location}")
-                    time.sleep(0.5)  # Sleep less time to accelerate simulation
-                    current_time += timedelta(seconds=accelerated_seconds / 10)  # Simulate a faster passage
-                else:
-                    current_time += timedelta(seconds=time_to_arrival)
-                    break
-
-            print(f"Arrived at {end_location} at {current_time.strftime('%H:%M:%S')}.")
-
-        print(f"Route simulation for route {self.id} completed.")
+                f"Simulating travel from {start_location} to {end_location}. Expected arrival: {arrival_time.strftime('%H:%M:%S')}")
+            current_time = arrival_time
+        print(f"Route {self.id} completed.")
 
 
     def __str__(self):
@@ -115,7 +96,6 @@ class Route:
         return f"Route ID: {self.id}, Locations: {stops_with_times}, Truck ID: {self.truck.id_truck if self.truck else 'No truck assigned'}"
 
     def __len__(self):
-        """Calculate the total length of the route."""
         total_distance = 0
         for i in range(len(self.locations) - 1):
             start_location = self.locations[i]

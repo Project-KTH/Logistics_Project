@@ -12,6 +12,8 @@ class CreatePackageCommand:
     def execute(self):
         start_location, end_location, weight, customer_info = self._params
         weight = float(weight)
-        new_package = Package(start_location, end_location, weight, customer_info)
+        new_package = Package(start_location=start_location, end_location=end_location, weight=weight,
+                              customer_info=customer_info)
         self._app_data.packages.append(new_package)
+
         return f'Package {new_package.id} was created successfully!'

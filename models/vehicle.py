@@ -21,12 +21,12 @@ class Vehicle:
         self._name = name
         self._capacity = capacity
         self._truck_range = truck_range
-        self._initial_capacity = capacity  # Initial capacity to reset to full capacity
-        self._initial_range = truck_range  # To reset truck range
+        self._initial_capacity = capacity
+        self._initial_range = truck_range
 
         self._id_truck = generate_id(4, 4, existing_ids=Vehicle.id_all_vehicles)
         Vehicle.id_all_vehicles.add(self._id_truck)
-        self._routes = []  # List of all routes for a truck.
+        self._routes = []
         self._current_location = "Garage"
 
     @property

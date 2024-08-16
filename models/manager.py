@@ -39,7 +39,7 @@ class Manager(User):
     def reset_truck(self, truck_id):
         truck = self.application_data.find_vehicle_by_id(truck_id)
         if truck:
-            truck.reset()  # Reset capacity and range
+            truck.reset()
             print(f"Truck {truck_id} reset.")
         else:
             print("Truck not found.")
@@ -64,10 +64,7 @@ class Manager(User):
         # Route Management
 
     def create_route(self, locations=None, departure_time=None):
-        """
-        Create a route. If `locations` is provided, use it. Otherwise, generate locations based on packages.
-        """
-        if not locations:  #
+        if not locations:
             locations = self.generate_locations_from_packages(self.application_data.packages)
 
         if not departure_time:
@@ -86,7 +83,6 @@ class Manager(User):
         return list(unique_locations)
 
     def get_routes_status(self):
-        """Get the status of all delivery routes in progress."""
         now = datetime.now()
 
         for route in self.application_data.routes:
