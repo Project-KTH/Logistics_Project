@@ -9,8 +9,8 @@ class User:
 
     def __init__(self, name, contact_info, password, role='basic'):
         self._user_id = generate_id(existing_ids=self.id_list)
-        self.name = name
-        self.contact_info = contact_info
+        self._name = self._validate_name(name)
+        self.contact_info = self._validate_contact_info(contact_info)
         self.password_hash = self.hash_password(password)
         self.role = role
         self.ordered_packages = []
@@ -18,6 +18,10 @@ class User:
     @property
     def id(self):
         return self._user_id
+
+    @property
+    def name(self):
+        return self._name
     @staticmethod
     def hash_password(password):
         return hashlib.sha256(password.encode()).hexdigest()
@@ -27,9 +31,18 @@ class User:
 
 
     def update_contact_info(self, new_contact_info):
-        self.contact_info = new_contact_info
+        self.contact_info = self._validate_contact_info(new_contact_info)
         print(f"Contact information for user {self._user_id} updated.")
 
+    def _validate_name(self, name):
+        if len(name) < 2:
+            raise ValueError("Name must be at least 2 characters long.")
+        return name
+
+    def _validate_contact_info(self, contact_info):
+        if len(contact_info) < 2:
+            raise ValueError("Contact information must be at least 2 characters long.")
+        return contact_info
     def __str__(self):
         return f"User ID: {self._user_id}, Name: {self.name}, Role: {self.role}, Contact Info: {self.contact_info}"
 
