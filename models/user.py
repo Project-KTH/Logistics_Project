@@ -40,8 +40,8 @@ class User:
         return name
 
     def _validate_contact_info(self, contact_info):
-        if len(contact_info) < 2:
-            raise ValueError("Contact information must be at least 2 characters long.")
+        if len(contact_info) < 5:
+            raise ValueError("Contact information must be at least 5 characters long.")
         return contact_info
     def __str__(self):
         return f"User ID: {self._user_id}, Name: {self.name}, Role: {self.role}, Contact Info: {self.contact_info}"
