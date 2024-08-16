@@ -46,9 +46,11 @@ class Package:
     @property
     def customer_info(self):
         return self._customer_info
-    
+
     @customer_info.setter
     def customer_info(self, value):
+        if not value or value.strip() == '':
+            raise ValueError('Customer info cannot be an empty string')
         self._customer_info = value
 
     def generate_id(self):
