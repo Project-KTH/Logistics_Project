@@ -142,7 +142,7 @@ class Vehicle:
         self._routes.append(new_route)
         # self._truck_range -= len(new_route)
 
-        print(f"Route {new_route.route_id} added to {self._name} ID: {self._id_truck}")
+        print(f"Route {new_route.id} added to {self._name} ID: {self._id_truck}")
 
     def update_capacity(self, package_weight: float):
         if package_weight <= 0:
@@ -168,7 +168,7 @@ class Vehicle:
 
     def __str__(self):
         return (
-            f"{self.name} ID:--{self.id_truck}--\n"
+            f"{self.name} ID: {self.id_truck}\n"
             f"location: {self.track_location()}\n"
             f"route: {self.find_active_route()}\n"
             f"capacity left: {self.capacity}kg\n"

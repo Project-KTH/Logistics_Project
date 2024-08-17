@@ -2,7 +2,6 @@ from core.command_factory import CommandFactory
 from core.command_factory import CommandFactory
 from models.manager import Manager
 from models.user import User
-from getpass import getpass
 
 
 class Engine:
@@ -45,7 +44,7 @@ class Engine:
                 self._role = 'manager'
                 name = input("Enter your name: ")
                 contact_info = input("Enter your email: ")
-                password = getpass("Create a password: ")
+                password = input("Create a password: ")
                 self._user = Manager(name, contact_info, password, self._command_factory._app_data)
                 print(f"\nManager {self._user.name} registered successfully!")
                 break
@@ -53,7 +52,7 @@ class Engine:
                 self._role = 'user'
                 name = input("Enter your name: ")
                 contact_info = input("Enter your email: ")
-                password = getpass("Create a password: ")
+                password = input("Create a password: ")
                 self._user = User(name, contact_info, password)
                 print(f"\nUser {self._user.name} registered successfully!")
                 break

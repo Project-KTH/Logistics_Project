@@ -18,3 +18,6 @@ class Location:
 
     def __str__(self):
         return f'{self.name}'
+    
+    def __eq__(self, other):
+        return self._name == other._name

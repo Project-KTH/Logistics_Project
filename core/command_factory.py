@@ -1,12 +1,15 @@
 from commands.add_user_command import AddUserCommand
-from commands.assign_rout_to_truck_command import AssignRouteToTruckCommand
-from commands.base_command import BaseCommand
+from commands.assign_route_to_truck_command import AssignRouteToTruckCommand
 from commands.create_manager_command import CreateManagerCommand
 from commands.create_package_command import CreatePackageCommand
 from commands.create_route_command import CreateRouteCommand
 from commands.delete_package_command import DeletePackageCommand
 from commands.order_package_command import OrderPackageCommand
+from commands.view_all_vehicles import ViewAllVehicles
+from commands.find_route_for_package import FindRouteForPackage
+from commands.view_available_vehicles_for_route import ViewAvailableVehicles
 from core.application_data import ApplicationData
+
 
 
 import shlex
@@ -15,13 +18,11 @@ class CommandFactory:
     def __init__(self, data: ApplicationData):
         self._app_data = data
 
-    def create(self, input_line):
+    def create(self, input_line: str):
         cmd, *params = input_line.split(maxsplit=1)
 
-        if not params:
-            raise ValueError(f'Invalid number of arguments for {cmd}. Expected more parameters.')
-
-        params = shlex.split(params[0])
+        if params:
+            params = shlex.split(params[0])
 
         # Creating the command based on input
         if cmd.lower() == "createpackage":
@@ -38,7 +39,13 @@ class CommandFactory:
             return self.create_with_art(CreateRouteCommand(params, self._app_data), "route")
         elif cmd.lower() == "orderpackage":
             return OrderPackageCommand(params, self._app_data)
-
+        elif cmd.lower() == "viewallvehicles":
+            return self.create_with_art(ViewAllVehicles(params, self._app_data), "truck")
+        elif cmd.lower() == "findrouteforpackage":
+            return self.create_with_art(FindRouteForPackage(params, self._app_data), "route")
+        elif cmd.lower() == "viewavailablevehicles":
+            return self.create_with_art(ViewAvailableVehicles(params, self._app_data), "truck")
+            
         raise ValueError(f'Invalid command name: {cmd}!')
 
     def create_with_art(self, command, art_type):
