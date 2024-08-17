@@ -30,11 +30,11 @@ class Cities:
         }
 
     @classmethod
-    def from_string(cls, city_string):
+    def from_string(cls, city_string: str):
         if city_string in cls.abbreviation_map:
             return cls.abbreviation_map[city_string]
-        elif city_string in cls.abbreviation_map.values():
-            return city_string
+        elif city_string.upper() in cls.abbreviation_map.values():
+            return city_string.upper()
         else:
             raise ValueError(f'No office at this location: {city_string}')
 

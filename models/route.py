@@ -4,7 +4,6 @@ from helpers.distances import distances
 from helpers.functions import generate_id
 from models.location import Location
 from models.vehicle import Vehicle
-from models.location import Location
 import time
 
 class Route:

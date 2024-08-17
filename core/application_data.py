@@ -35,6 +35,13 @@ class ApplicationData:
 
     def find_user_by_id(self, user_id):
         return next((user for user in self.users if user.user_id == user_id), None)
+    
+    def find_user_by_contact_info(self, contact_info):
+        for user in self.users:
+            if user.contact_info == contact_info:
+                return user
+        
+        raise ValueError(f'User with {contact_info} contact info does not exist!')
 
     def init_vehicles(self):
         self.vehicles: list[Vehicle] = []
@@ -46,8 +53,8 @@ class ApplicationData:
     def init_users(self):
         self.users: list[User] = []
         for n in range(5):
-            user_id = 1000 + n
+            password = "001234kthabC"
             name = "Test_User_0" + str(n)
             contact_info = f"{name}@gmail.com"
-            new_user = User(user_id, name, contact_info)
+            new_user = User(name, contact_info, password)
             self.users.append(new_user)

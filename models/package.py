@@ -1,5 +1,6 @@
 import random
 import string
+from models.location import Location
 
 from helpers.functions import generate_id
 
@@ -9,8 +10,8 @@ class Package:
     id_list = []
 
     def __init__(self, start_location, end_location, weight: float, customer_info: str):
-        self._start_location = start_location
-        self._end_location = end_location
+        self.start_location = start_location
+        self.end_location = end_location
         self.weight = weight
         self.customer_info = customer_info
         self._package_id = generate_id(existing_ids=self.id_list)
@@ -24,9 +25,27 @@ class Package:
     def start_location(self):
         return self._start_location
     
+    @start_location.setter
+    def start_location(self, value):
+        if isinstance(value, str):
+            self._start_location = Location(value)
+        elif isinstance(value, Location):
+            self._start_location = value
+        else:
+            raise ValueError(f"Invalid start location {value}.")
+
     @property
     def end_location(self):
         return self._end_location
+    
+    @end_location.setter
+    def end_location(self, value):
+        if isinstance(value, str):
+            self._end_location = Location(value)
+        elif isinstance(value, Location):
+            self._end_location = value
+        else:
+            raise ValueError(f"Invalid end location {value}.")
     
     @property
     def weight(self):
@@ -34,14 +53,13 @@ class Package:
     
     @weight.setter
     def weight(self, value):
-        if value == '':
-            raise ValueError('Weight cannot be empty')
-        elif not isinstance(value, (float, int)):
-            raise ValueError('Weight must be a number')
-        elif value <= 0:
+        try:
+            value = float(value)
+        except ValueError:
+            raise ValueError("Invalid weight format. Please provide a numeric value.")
+        if value <= 0:
             raise ValueError('Weight cannot be 0 or less')
-        else:
-            self._weight = value
+        self._weight = value
 
     @property
     def customer_info(self):
