@@ -390,14 +390,14 @@ def mock_user(user_id, name, contact_info, role='basic'):
 
     user.track_package.side_effect = track_package
 
-    def calculate_expected_arrival(route, package):
-        """Calculate the expected arrival time at the package's end location."""
-        arrival_times = route.calculate_arrival_times()
-        # Find the index of the package's end location in the route's location list
-        end_location_index = route.locations.index(package.end_location)
-        # Return the expected arrival time at the package's end location
-        return arrival_times[end_location_index]
-
-    user.calculate_expected_arrival.side_effect = calculate_expected_arrival
+    # def calculate_expected_arrival(route, package):
+    #     """Calculate the expected arrival time at the package's end location."""
+    #     arrival_times = route.calculate_arrival_times()
+    #     # Find the index of the package's end location in the route's location list
+    #     end_location_index = route.locations.index(package.end_location)
+    #     # Return the expected arrival time at the package's end location
+    #     return arrival_times[end_location_index]
+    #
+    # user.calculate_expected_arrival.side_effect = calculate_expected_arrival
 
     return user
