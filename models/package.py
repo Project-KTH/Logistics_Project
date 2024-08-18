@@ -15,7 +15,7 @@ class Package:
         self.weight = weight
         self.customer_info = customer_info
         self._package_id = generate_id(existing_ids=self.id_list)
-
+        self.route = None
 
     @property
     def id(self):
@@ -93,4 +93,5 @@ class Package:
             f'From: {self.start_location}\n'
             f'To: {self.end_location}\n'
             f'Customer: {self.customer_info}\n'
+            f'Assigned Route ID: {self.route.id if self.route else "No route assigned"}\n'
         )

@@ -18,6 +18,8 @@ class Route:
         else:
             self.departure_time = datetime.strptime(departure_time, '%d-%m-%Y %H:%M')
         self.truck = None
+        self.capacity = 0
+        self.packages = []
 
     @property
     def id(self):
@@ -37,6 +39,17 @@ class Route:
         if not isinstance(truck, Vehicle):
             raise ValueError("Expected an instance of Vehicle.")
         self.truck = truck
+        self.capacity = truck.capacity
+
+    def add_package(self, package):
+        if package.weight > self.capacity:
+            raise ValueError(
+                f"Cannot add package. Package weight {package.weight}kg exceeds available capacity {self.capacity}kg.")
+
+        self.packages.append(package)
+        self.capacity -= package.weight
+        package.route = self
+
     def calculate_travel_time(self, distance):
         average_speed = Vehicle.SPEED_CONSTANT
         return distance / average_speed
