@@ -3,7 +3,7 @@ from models.constants.location_constants import Cities
 
 class Location:
     def __init__(self, name: str):
-        self._name = Cities.from_string(name)
+        self._name = Cities.from_string(name) if isinstance(name, str) else name.name
         self.distances = Cities.distances
 
     @property
@@ -11,10 +11,10 @@ class Location:
         return self._name
 
     def get_distance_to(self, other_city: str):
-        """Gets the distance from the current object to another location"""
-        if Cities.from_string(other_city) not in self.distances[self.name]:
+        other_city_abbr = Cities.from_string(other_city)
+        if other_city_abbr not in self.distances[self.name]:
             raise ValueError(f"No route between {self.name} and {other_city}")
-        return self.distances[self.name][Cities.from_string(other_city)]
+        return self.distances[self.name][other_city_abbr]
 
     def __str__(self):
         return f'{self.name}'

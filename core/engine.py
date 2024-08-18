@@ -78,7 +78,7 @@ class Engine:
                     if art_type == "package":
                         result += f"\n{self._command_factory.display_box_art()}"
                     elif art_type == "route":
-                        result += f"\n{self._command_factory.display_route_art()}"
+                        result += f"\n{self._command_factory.display_simulation_art()}"
                     elif art_type == "truck":
                         result += f"\n{self._command_factory.display_truck_art()}"
                     elif art_type == "user":
@@ -93,20 +93,21 @@ class Engine:
     def show_help(self):
         if self._role == 'manager':
             print("""
-Available Commands for Manager:
-    createpackage <start_location> <end_location> <weight> <customer_info> - Create a new package
-    deletepackage <package_id> - Delete an existing package
-    adduser <name> <email> <password> - Add a new user
-    removeuser <user_id> - Remove an existing user
-    createroute <locations> <departure_time> - Create a new route
-    assignroutetotruck <truck_id> <route_id> - Assign a route to a truck
-    createmanager <name> <contact_info> <password> - Create a new manager
-    orderpackage <start_location> <end_location> <weight> - Order a new package
-    trackpackage <package_id> - Track an existing package
-            """)
+    Available Commands for Manager:
+        createpackage <start_location> <end_location> <weight> <customer_info> - Create a new package
+        deletepackage <package_id> - Delete an existing package
+        adduser <name> <email> <password> - Add a new user
+        removeuser <user_id> - Remove an existing user
+        createroute <locations> <departure_time> - Create a new route
+        assignroutetotruck <truck_id> <route_id> - Assign a route to a truck
+        createmanager <name> <contact_info> <password> - Create a new manager
+        orderpackage <start_location> <end_location> <weight> - Order a new package
+        trackpackage <package_id> - Track an existing package
+        simulate <route_id> - Simulate the delivery of a route
+                """)
         elif self._role == 'user':
             print("""
-Available Commands for User:
-    orderpackage <start_location> <end_location> <weight> - Order a new package
-    trackpackage <package_id> - Track an existing package
-            """)
+    Available Commands for User:
+        orderpackage <start_location> <end_location> <weight> - Order a new package
+        trackpackage <package_id> - Track an existing package
+                """)

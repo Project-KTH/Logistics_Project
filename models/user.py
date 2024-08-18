@@ -66,7 +66,6 @@ class User:
                 current_location = current_route.truck.track_location()
                 expected_arrival = calculate_expected_arrival(current_route, package)
 
-                # Using the __str__ format for the package information
                 print(package)
                 print(f"Current Location: {current_location}")
                 print(

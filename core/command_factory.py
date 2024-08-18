@@ -5,6 +5,7 @@ from commands.create_package_command import CreatePackageCommand
 from commands.create_route_command import CreateRouteCommand
 from commands.delete_package_command import DeletePackageCommand
 from commands.order_package_command import OrderPackageCommand
+from commands.simulation_command import SimulateRouteCommand
 from commands.view_all_vehicles import ViewAllVehicles
 from commands.find_route_for_package import FindRouteForPackage
 from commands.view_available_vehicles_for_route import ViewAvailableVehicles
@@ -45,8 +46,10 @@ class CommandFactory:
             return self.create_with_art(FindRouteForPackage(params, self._app_data), "route")
         elif cmd.lower() == "viewavailablevehicles":
             return self.create_with_art(ViewAvailableVehicles(params, self._app_data), "truck")
-            
-        raise ValueError(f'Invalid command name: {cmd}!')
+        elif cmd.lower() == 'simulate':
+            return self.create_with_art(SimulateRouteCommand(params, self._app_data), "route")
+        else:
+            raise ValueError(f'Invalid command name: {cmd}!')
 
     def create_with_art(self, command, art_type):
         return command, art_type
@@ -87,4 +90,16 @@ class CommandFactory:
          +-----------+
          | MANAGER   |
          +-----------+
+         """
+
+    def display_simulation_art(self):
+        return """
+           ______
+         /|_||_\\__.
+        (   _    _ _|
+         =`(_)--(_)
+
+         ~~~~~~~~~~~~~~~
+         ||   ROUTE   || 
+         ~~~~~~~~~~~~~~~
          """

@@ -6,18 +6,13 @@ from models.location import Location
 from models.vehicle import Vehicle
 import time
 
+
 class Route:
     id_list = []
 
-    def __init__(self, packages=None, locations=None, departure_time=None):
+    def __init__(self, locations=None, departure_time=None):
         self._route_id = generate_id(existing_ids=self.id_list)
-        if locations:
-            self.locations = locations
-        elif packages:
-            self.locations = self.generate_locations_from_packages(packages)
-        else:
-            raise ValueError("Either packages or locations must be provided.")
-
+        self.locations = locations if locations else []
         if isinstance(departure_time, datetime):
             self.departure_time = departure_time
         else:
@@ -31,13 +26,17 @@ class Route:
     def generate_locations_from_packages(self, packages):
         location_order = []
         for package in packages:
-            if package.start_location not in location_order:
-                location_order.append(package.start_location)
-            if package.end_location not in location_order:
-                location_order.append(package.end_location)
+            if package.start_location.name not in location_order:
+                location_order.append(package.start_location.name)
+            if package.end_location.name not in location_order:
+                location_order.append(package.end_location.name)
 
-        return [Location(name) for name in location_order]
+        self.locations = [Location(name) for name in location_order]
 
+    def assign_truck(self, truck):
+        if not isinstance(truck, Vehicle):
+            raise ValueError("Expected an instance of Vehicle.")
+        self.truck = truck
     def calculate_travel_time(self, distance):
         average_speed = Vehicle.SPEED_CONSTANT
         return distance / average_speed
@@ -64,31 +63,37 @@ class Route:
         current_index = [loc.name for loc in self.locations].index(current_location)
         if current_index < len(self.locations) - 1:
             return self.locations[current_index + 1].name
-        return None  # No further stops
-
+        return None
     def update_locations_for_packages(self, packages):
         for package in packages:
-            start_location = Location(package.start_location)
-            end_location = Location(package.end_location)
+            start_location = package.start_location
+            end_location = package.end_location
             if not any(location.name == start_location.name for location in self.locations):
                 self.locations.append(start_location)
             if not any(location.name == end_location.name for location in self.locations):
                 self.locations.append(end_location)
 
     def simulate_route(self):
+        current_time = self.departure_time
+        print(f"Starting simulation at {current_time.strftime('%H:%M:%S')}")
+
         for n in range(len(self.locations) - 1):
             start_location = self.locations[n].name
             end_location = self.locations[n + 1].name
             route_distance = distances[start_location][end_location]
             route_duration = route_distance / Vehicle.SPEED_CONSTANT
-            accelerated_seconds = route_duration * 3600  # Treat hours as seconds
+            accelerated_seconds = route_duration * 3600
             arrival_time = current_time + timedelta(seconds=accelerated_seconds)
-            print(
-                f"Simulating travel from {start_location} to {end_location}. Expected arrival: {arrival_time.strftime('%H:%M:%S')}")
-            current_time = arrival_time
+
+            # Simulate travel time
+            while current_time < arrival_time:
+                if current_time + timedelta(seconds=10) >= arrival_time:
+                    # Only print the arrival message once
+                    print(f"Arriving at {end_location} at {arrival_time.strftime('%H:%M:%S')}")
+                    break
+                current_time += timedelta(seconds=10)  # Faster time increments
+
         print(f"Route {self.id} completed.")
-
-
     def __str__(self):
         arrival_times = self.calculate_arrival_times()
         stops_with_times = ', '.join(f"{loc.name} ({time})" for loc, time in zip(self.locations, arrival_times))
