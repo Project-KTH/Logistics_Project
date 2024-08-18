@@ -20,6 +20,16 @@ class Package:
     @property
     def id(self):
         return self._package_id
+    
+    @property
+    def expected_arrival_time(self):
+        if self.route:
+            end_location_index = self.route.locations.index(self.end_location)
+            arrival_time = self.route.calculate_arrival_times()[end_location_index]
+            return arrival_time
+        else:
+            return "No route assigned."
+
 
     @property
     def start_location(self):
@@ -94,4 +104,5 @@ class Package:
             f'To: {self.end_location}\n'
             f'Customer: {self.customer_info}\n'
             f'Assigned Route ID: {self.route.id if self.route else "No route assigned"}\n'
+            f'Expected arrival time: {self.expected_arrival_time}\n'
         )

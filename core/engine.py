@@ -104,6 +104,14 @@ class Engine:
         orderpackage <start_location> <end_location> <weight> - Order a new package
         trackpackage <package_id> - Track an existing package
         simulate <route_id> - Simulate the delivery of a route
+        assignpackagetoroute <package_id> <route_id>
+        findrouteforpackage <package_id>
+        viewallvehicles - No params; show all created vehicles.
+        viewavailablevehicles <route_id> - Search for vehicle with route locations
+        viewnotassignedpackages - No params
+        viewallpackages - No params
+        viewallusers - No params
+        viewsinglepackage <package_id> <contact_info>
                 """)
         elif self._role == 'user':
             print("""

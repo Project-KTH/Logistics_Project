@@ -9,6 +9,11 @@ from commands.simulation_command import SimulateRouteCommand
 from commands.view_all_vehicles import ViewAllVehicles
 from commands.find_route_for_package import FindRouteForPackage
 from commands.view_available_vehicles_for_route import ViewAvailableVehicles
+from commands.view_not_assigned_packages import ViewNotAssignedPackages
+from commands.assign_package_to_route_command import AssignPackageToRouteCommand
+from commands.view_all_packages import ViewAllPackages
+from commands.view_all_users import ViewAllUsers
+from commands.view_single_package import ViewSinglePackage
 from core.application_data import ApplicationData
 
 
@@ -48,6 +53,16 @@ class CommandFactory:
             return self.create_with_art(ViewAvailableVehicles(params, self._app_data), "truck")
         elif cmd.lower() == 'simulate':
             return self.create_with_art(SimulateRouteCommand(params, self._app_data), "route")
+        elif cmd.lower() == 'viewnotassignedpackages':
+            return self.create_with_art(ViewNotAssignedPackages(params, self._app_data), "package")
+        elif cmd.lower() == 'assignpackagetoroute':
+            return self.create_with_art(AssignPackageToRouteCommand(params, self._app_data), "package")
+        elif cmd.lower() == 'viewallpackages':
+            return self.create_with_art(ViewAllPackages(params, self._app_data), "package")
+        elif cmd.lower() == 'viewallusers':
+            return self.create_with_art(ViewAllUsers(params, self._app_data), "manager")
+        elif cmd.lower() == 'viewsinglepackage':
+            return self.create_with_art(ViewSinglePackage(params, self._app_data), "package")
         else:
             raise ValueError(f'Invalid command name: {cmd}!')
 

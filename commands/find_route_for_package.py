@@ -21,7 +21,10 @@ class FindRouteForPackage:
         routes = []
         for route in self._app_data.routes:
             if package.start_location in route.locations and package.end_location in route.locations:
-                routes.append(route)
+                start_index = route.locations.index(package.start_location)
+                end_index = route.locations.index(package.end_location)
+                if start_index < end_index:
+                    routes.append(route)
         
         if routes:
             return "\n----------------------\n".join(str(route) for route in routes)
