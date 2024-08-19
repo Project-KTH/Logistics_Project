@@ -7,7 +7,7 @@ import string
 from helpers.functions import generate_id
 
 class Vehicle:
-    id_all_vehicles = set()  # Class variable
+    id_all_vehicles = set()
 
     SPEED_CONSTANT = 87
 
@@ -109,7 +109,6 @@ class Vehicle:
             return True
 
     def check_matching_locations(self, new_route):
-        """Checks if the route start location is the truck current location"""
         if len(self._routes) > 0:
             last_route = self._routes[-1]
             if last_route.locations[-1].name == new_route.locations[0].name:
@@ -125,14 +124,7 @@ class Vehicle:
         else:
             raise ValueError(f"Range not enough to cover {len(new_route)} km")
     
-    # 
-    # def check_remaining_range(self, new_route):
-    #     if self._initial_range == self._truck_range and self._initial_range > len(new_route):
-    #         return True
-    #     if self._truck_range > len(new_route):
-    #         return True
-    #     else:
-    #         raise ValueError(f"Range not enough to cover {len(new_route)} km")
+
 
     def assign_route(self, new_route):
         self.check_schedule(new_route)
@@ -140,7 +132,6 @@ class Vehicle:
         self.check_remaining_range(new_route)
     
         self._routes.append(new_route)
-        # self._truck_range -= len(new_route)
 
         print(f"Route {new_route.id} added to {self._name} ID: {self._id_truck}")
 
@@ -152,16 +143,9 @@ class Vehicle:
 
         self._capacity -= package_weight
 
-    # def update_range(self, distance):
-    #     if distance <= 0:
-    #         raise ValueError("Distance is expected to be a positive value")
-    #     if distance > self._truck_range:
-    #         raise ValueError(f"Remaining range is not enough for distance {distance} km")
 
-    #     self._truck_range -= distance
 
     def reset(self):
-        """Reset the truck's capacity and range to initial values."""
         self._capacity = self._initial_capacity
         self._truck_range = self._initial_range # not needed now.
         print(f"Vehicle ID: {self._id_truck} has been reset.")

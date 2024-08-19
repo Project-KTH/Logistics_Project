@@ -62,7 +62,7 @@ def mock_route():
 
     def calculate_arrival_times():
         """Calculate estimated arrival times for each location in the route."""
-        arrival_times = [route.departure_time]  # Use the departure_time directly as a datetime object
+        arrival_times = [route.departure_time]
         current_time = arrival_times[0]
 
         for i in range(len(route.locations) - 1):

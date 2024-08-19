@@ -32,7 +32,6 @@ class CommandFactory:
         if params:
             params = shlex.split(params[0])
 
-        # Creating the command based on input
         if cmd.lower() == "createpackage":
             return self.create_with_art(CreatePackageCommand(params, self._app_data), "package")
         elif cmd.lower() == "deletepackage":

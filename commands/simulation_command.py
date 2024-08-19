@@ -11,6 +11,5 @@ class SimulateRouteCommand():
         if not route:
             return f"Route with ID {self.route_id} not found."
 
-        # Simulate the route
         simulation_result = route.simulate_route()
         return f"Simulation for route {self.route_id} completed.\nDetails:\n{simulation_result}"

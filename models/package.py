@@ -81,20 +81,6 @@ class Package:
             raise ValueError('Customer info cannot be an empty string')
         self._customer_info = value
 
-    def generate_id(self):
-        """Generates unique ID for each package"""
-        letters = string.ascii_uppercase
-        numbers = string.digits
-
-        while True:
-
-            first_two_characters = ''.join(random.choices(letters, k=2))
-            rest_characters = ''.join(random.choices(numbers, k=4))
-            the_id = first_two_characters + rest_characters
-
-            if the_id not in self.id_list:
-                self.id_list.append(the_id)
-                return the_id
 
     def __str__(self) -> str:
         return (

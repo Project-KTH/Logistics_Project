@@ -98,13 +98,11 @@ class Route:
             accelerated_seconds = route_duration * 3600
             arrival_time = current_time + timedelta(seconds=accelerated_seconds)
 
-            # Simulate travel time
             while current_time < arrival_time:
                 if current_time + timedelta(seconds=10) >= arrival_time:
-                    # Only print the arrival message once
                     print(f"Arriving at {end_location} at {arrival_time.strftime('%H:%M:%S')}")
                     break
-                current_time += timedelta(seconds=10)  # Faster time increments
+                current_time += timedelta(seconds=10)
 
         print(f"Route {self.id} completed.")
     def __str__(self):
