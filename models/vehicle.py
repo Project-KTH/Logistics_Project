@@ -167,10 +167,18 @@ class Vehicle:
         print(f"Vehicle ID: {self._id_truck} has been reset.")
 
     def __str__(self):
+        if len(self._routes) > 0:
+            all_assigned_routes = "\n"
+            for ind, route in enumerate(self._routes, 1):
+                all_assigned_routes += f"  {ind}. {str(route)}\n"
+        else:
+            all_assigned_routes = None
+
         return (
             f"{self.name} ID: {self.id_truck}\n"
-            f"location: {self.track_location()}\n"
-            f"route: {self.find_active_route()}\n"
-            f"capacity left: {self.capacity}kg\n"
-            f"range to go: {self.truck_range}km"
+            f"current location: {self.track_location()}\n"
+            f"current route: {self.find_active_route()}\n"
+            f"all assigned routes: {all_assigned_routes}\n"
+            f"capacity: {self.capacity}kg\n"
+            f"range: {self.truck_range}km\n"
         )
