@@ -6,15 +6,17 @@ The Truck Logistics Management System is an Object-Oriented Python application d
 
 In models the main classes are Route, Package, Vehicle, Manager and User.
 
-- Routes have a **id, locations: list, packages, departure_time**.
-- Packages have a **id, start_location, end_location, weight, customer_info**.
-- Trucks/Vehicles have a **id, name, capacity, range, current_location, routes: list**.
+- Routes have a **id, locations, packages, departure_time, truck, capacity**.
+- Packages have a **id, start_location, end_location, weight, customer_info, route, expected_arrival_time**.
+- Trucks/Vehicles have a **id, name, capacity, range, current_location, routes: list with all routes**.
 - Users have a **id, name, contact_info, password, role and ordered_packages: list**.
 
 
 #### 1. Route class
 Available methods:
 - generate_locations_from_packages() - Generate a list of unique locations based on package start and end points.
+- assign_truck() - updates self.truck and self.capacity
+- add_package() - updates self.packages and self.capacity
 - calculate_travel_time() - Calculate travel time based on distance and vehicle speed.
 - calculate_arrival_times() - Calculate estimated arrival times for each location in the route.
 - next_stop() - Determine the next stop based on the current location.
@@ -26,7 +28,7 @@ Available methods:
 
 #### 2. Package class
 Available methods:
-- __str__() - returns "Package ID: {}, Weight: {}kg, From: {self.start_location}, To: {self.end_location}, Customer: {self.customer_info}"
+- __str__() - returns "Package ID: {}, Weight: {}kg, From: {self.start_location}, To: {self.end_location}, Customer: {self.customer_info}, Assigned Route ID: {}, Expected arrival time: {}"
 
 Constraints:
 - weight must be valid positive int or float
@@ -82,29 +84,48 @@ Available methods:
 
 ### 6. Commands
 
-- `AddUserCommand` (params: name, contact_info, password) - creates a new User and stores it in the AppData. Name must be min 2 letters, contact_info must not be empty.
+- `AddUser` (params: name, contact_info, password) - create a new User and stores it in the AppData. Name must be min 2 letters, contact_info must not be empty.
 
-- `AssignRouteToTruckCommandt` (params: route_id, truck_id) - finds route and vehicle in app_data, assigns route to truck and assigns truck to route.
+- `AssignRouteToTruck` (params: route_id, truck_id) - find route and vehicle in app_data, assigns route to truck; assigns truck and capacity to route.
 
-- `CreatePackageCommand` (params: start_location, end_location, weight, customer_info) - creates a new Package and stores it in the AppData. Weight must be positive value, customer_info must mot be empty.
+- `AssignPackageToRoute` (params: package_id, route_id) - add package to Route and Route to Package.
 
-- `CreateRouteCommand` (params: locations_str, departure_time_str) - creates a new Route and stores it in the AppData.
+- `CreatePackage` (params: start_location, end_location, weight, customer_info) - creates a new Package and stores it in the AppData. Weight must be positive value, customer_info must mot be empty.
 
-- `OrderPackageCommand` (params: user_id, start_location, end_location, weight) - creates a new Package and stores it in the AppData, adds the package to the User.
+- `CreateRoute` (params: locations_str: comma separated, departure_time_str) - creates a new Route and stores it in the AppData.
 
-- `DeletePackageCommand` (params: package_id) - find and delete Package from AppData list[Packages].
+- `OrderPackage` (params: user_id, start_location, end_location, weight) - creates a new Package and stores it in the AppData, adds the package to the User.
 
-- `CreateManagerCommand` (params: name, contact_info, password) - create and store a new Manager in the AppData list[User]. Name must be min 2 letters, contact_info must not be empty.
+- `DeletePackage` (params: package_id) - find and delete Package from AppData list[Packages].
+
+- `CreateManager` (params: name, contact_info, password) - create and store a new Manager in the AppData list[User]. Name must be min 2 letters, contact_info must not be empty.
+
+- `FindRouteForPackage`(params: package_id)
+
+- `ViewAllPackages`
+
+- `ViewAllUsers`
+
+- `ViewAllVehicles` - view all created vehicles.
+
+- `ViewNotAssignedPackages`
+
+- `ViewNotAssignedPackages`
+
+- `ViewAvailableVehicles`(params: route_id)
+
+- `ViewAvailableVehicles`(params: package_id, customer_info)
 
 
 ### 7. ApplicationData class
 Available methods:
 - find_package_by_id() - returns Package or None if not found
-- find_route_by_id() - returns Route or None if not found
-- find_vehicle_by_id - returns Vehicle or None if not found
-- find_user_by_id() - returns User or None if not found
-- find_route_for_package - returns Route or None if not 
 - find_route_by_package_id() - returns Route or None if not found
+- find_vehicle_by_id - returns Vehicle or None if not found
+- find_route_for_package - returns Route or None if not 
+- find_route_by_id() - returns Route or None if not found
+- find_user_by_id() - returns User or None if not found
+- find_user_by_contact_info() - returns User or raises ValueError
 
 Attributes:
 - self.vehicles: list[Vehicle]
@@ -112,7 +133,7 @@ Attributes:
 - self.packages: list[Packages]
 - self.users: list[User]
 
-### Unit Tests
+### 8. Unit Tests
 Unit tests for the core functionality.
 
 
