@@ -34,11 +34,11 @@ class TestPackage(TestCase):
             self.package.weight = INVALID_PACKAGE_WEIGHT_NEGATIVE
 
     def testInitialiser_WeightNonNumber_RaisesError(self):
-        with self.assertRaisesRegex(ValueError, 'Weight must be a number'):
+        with self.assertRaisesRegex(ValueError, 'Invalid weight format. Please provide a numeric value.'):
             self.package.weight = INVALID_PACKAGE_WEIGHT_NONNUMBER
 
     def testInitialiser_WeightEmpty_RaisesError(self):
-        with self.assertRaisesRegex(ValueError, 'Weight cannot be empty'):
+        with self.assertRaisesRegex(ValueError, 'Invalid weight format. Please provide a numeric value.'):
             self.package.weight = INVALID_PACKAGE_WEIGHT_EMPTY
 
     def testInitialiser_CreatesIDCorrectly(self):
@@ -66,5 +66,9 @@ class TestPackage(TestCase):
             f'From: SYD\n'
             f'To: PER\n'
             f'Customer: customer info\n'
+            f'Assigned Route ID: No route assigned\n'
+            f'Expected arrival time: No route assigned.\n'
+
         )
         self.assertEqual(expected, str(self.package))
+

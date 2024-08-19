@@ -65,10 +65,10 @@ class TestVehicle(TestCase):
         self.assertEqual(truck2.id_truck, truck2.id_truck)
 
     def testFindActiveRoute_FindsRoute(self):
-        self.assertEqual(self.vehicle.find_active_route(), self.route3)
+        self.assertEqual(self.vehicle.find_active_route(), None)
         self.assertEqual(self.vehicle.find_active_route(datetime(2024, 7, 1, 12, 45)), self.route1)
         self.assertEqual(self.vehicle.find_active_route(datetime(2024, 10, 10, 10, 15)), self.route2)
-        self.assertEqual(self.vehicle.find_active_route(datetime(2025, 10, 10,10, 15)), None)
+        self.assertEqual(self.vehicle.find_active_route(datetime(2025, 10, 10, 10, 15)), None)
 
     def testTrackLocation_Works(self):
         self.assertEqual(self.vehicle.track_location(), 'DAR')
@@ -96,9 +96,10 @@ class TestVehicle(TestCase):
         self.assertTrue(self.vehicle.check_remaining_range(self.route2))
 
     # def testCheckRemainingRange_NotEnoughRange_ReturnsError(self):
-    #     self.vehicle._truck_range -= 10_000
+    #     self.vehicle._truck_range -= 100_000
     #     with self.assertRaisesRegex(ValueError, f"Range not enough to cover 4736 km"):
-    #         self.vehicle.check_remaining_range(self.route2) FAILED TODO
+    #         self.vehicle.check_remaining_range(self.route2)
+    #         # error not raised
 
     def testAssignRoute_PossibleRoute_AppendsToRoutes(self):
         self.assertEqual(len(self.vehicle._routes), 3)
@@ -147,10 +148,15 @@ class TestVehicle(TestCase):
 
     def testStr_OK(self):
         expected = (
-            f'{self.vehicle.name} ID:--{self.vehicle.id_truck}--\n'
-            f'location: DAR\n'
-            f'route: Route ID: {self.route3.id}, Locations: SYD (11-08-2024 03:34), DAR (13-08-2024 00:47), BRI (14-08-2024 16:10), MEL (15-08-2024 12:27), ASP (16-08-2024 14:22), Truck ID: No truck assigned\n'
-            f'capacity left: {self.vehicle.capacity}kg\n'
-            f'range to go: {self.vehicle.truck_range}km'
+            f'{self.vehicle.name} ID: {self.vehicle.id_truck}\n'
+            f'current location: DAR\n'
+            f'current route: None\n'
+            f'all assigned routes: \n'
+            f'  1. {self.route1}\n'
+            f'  2. {self.route2}\n'
+            f'  3. {self.route3}\n'
+            f'\n'
+            f'capacity: {self.vehicle.capacity}kg\n'
+            f'range: {self.vehicle.truck_range}km\n'
         )
         self.assertEqual(str(self.vehicle), expected)

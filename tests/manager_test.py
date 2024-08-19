@@ -63,8 +63,8 @@ class TestManager(TestCase):
     def testCreatePackage_OK(self):
         package = self.manager.create_package('SYD', 'PER', 1.5, 'customer info')
         self.assertIsInstance(package, Package)
-        self.assertEqual(package.start_location, 'SYD')
-        self.assertEqual(package.end_location, 'PER')
+        self.assertEqual(package.start_location._name, 'SYD')
+        self.assertEqual(package.end_location._name, 'PER')
         self.assertEqual(package.weight, 1.5)
         self.assertEqual(package.customer_info, 'customer info')
         self.assertEqual(self.test_application_data.packages, [package])

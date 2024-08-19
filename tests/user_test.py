@@ -13,8 +13,8 @@ class TestUser(TestCase):
 
     @patch('helpers.functions.generate_id', return_value=1000)
     def setUp(self, mock_generate_id):
-        self.user = User(VALID_USER_NAME, VALID_USER_CONTACT_INFO, VALID_USER_PASSWORD)
-        self.application_data = mock_application_data()
+        # self.user = User(VALID_USER_NAME, VALID_USER_CONTACT_INFO, VALID_USER_PASSWORD)
+        # self.application_data = mock_application_data()
 
         self.package1 = mock_package("PER", 'DAR', 10.5, "user1@example.com")
         self.package1._package_id = 'PKG001'

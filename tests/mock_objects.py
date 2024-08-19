@@ -21,6 +21,8 @@ def mock_package(start_location, end_location, weight, customer_info):
     package.weight = weight
     package._package_id = None
 
+    type(package).package_id = PropertyMock(return_value=package._package_id)
+
     type(package).start_location = PropertyMock(return_value = package._start_location)
 
     type(package).end_location = PropertyMock(return_value = package._end_location)
@@ -52,6 +54,7 @@ def mock_route():
     route = MagicMock(spec=Route)
     route.locations = []
     route.truck = None
+    route.packages = []
 
     route.departure_time = datetime(2024, 8, 10, 10, 00)
     def calculate_travel_time(distance):
