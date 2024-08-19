@@ -114,7 +114,11 @@ Available methods:
 
 - `ViewAvailableVehicles`(params: route_id)
 
-- `ViewAvailableVehicles`(params: package_id, customer_info)
+- `ViewAvailableVehicles`(params: package_id, customer_info) ViewAllRoutes
+
+- `ViewAllRoutes`
+
+- `ViewRoutesInProgress` compare route start and end date with Now.
 
 
 ### 7. ApplicationData class

@@ -23,7 +23,7 @@ class FindRouteForPackage:
             if package.start_location in route.locations and package.end_location in route.locations:
                 start_index = route.locations.index(package.start_location)
                 end_index = route.locations.index(package.end_location)
-                if start_index < end_index:
+                if start_index < end_index and package.weight <= route.capacity:
                     routes.append(route)
         
         if routes:

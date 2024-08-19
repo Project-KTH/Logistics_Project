@@ -14,6 +14,8 @@ from commands.assign_package_to_route_command import AssignPackageToRouteCommand
 from commands.view_all_packages import ViewAllPackages
 from commands.view_all_users import ViewAllUsers
 from commands.view_single_package import ViewSinglePackage
+from commands.view_routes_in_progress import ViewRoutesInProgress
+from commands.view_all_routes import ViewAllRoutes
 from core.application_data import ApplicationData
 
 
@@ -63,6 +65,10 @@ class CommandFactory:
             return self.create_with_art(ViewAllUsers(params, self._app_data), "manager")
         elif cmd.lower() == 'viewsinglepackage':
             return self.create_with_art(ViewSinglePackage(params, self._app_data), "package")
+        elif cmd.lower() == "viewroutesinprogress":
+            return self.create_with_art(ViewRoutesInProgress(params, self._app_data), "route")
+        elif cmd.lower() == "viewallroutes":
+            return self.create_with_art(ViewAllRoutes(params, self._app_data), "route")
         else:
             raise ValueError(f'Invalid command name: {cmd}!')
 

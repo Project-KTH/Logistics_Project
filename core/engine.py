@@ -112,6 +112,8 @@ class Engine:
         viewallpackages - No params
         viewallusers - No params
         viewsinglepackage <package_id> <contact_info>
+        viewallroutes - No params; show all created routes.
+        viewroutesinprogress - No params; current_time = Now
                 """)
         elif self._role == 'user':
             print("""
