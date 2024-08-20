@@ -1,3 +1,4 @@
+from core.application_data import ApplicationData
 from models.location import Location
 from models.route import Route
 from models.package import Package
@@ -115,10 +116,11 @@ class Manager(User):
         else:
             print("User not found.")
 
-    def create_and_assign_route(self, route_locations, departure_time_str, package_weight_threshold, application_data):
+    def create_and_assign_route(self, route_locations, departure_time_str, package_weight_threshold):
         """
         Creates a route, assigns a truck, and bulk assigns packages to the route. 2nd case
         """
+        application_data = self.application_data
 
         departure_time = datetime.strptime(departure_time_str, "%d-%m-%Y %H:%M")
         new_route = Route([Location(name) for name in route_locations], departure_time)

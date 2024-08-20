@@ -1,6 +1,7 @@
+from datetime import datetime
 from commands.validation_helpers import validate_params_count
 from core.application_data import ApplicationData
-from datetime import datetime
+from models.constants.location_constants import Cities
 from models.location import Location
 from models.route import Route
 
@@ -12,21 +13,33 @@ class CreateAndAssignRouteCommand:
         self._app_data = app_data
 
     def execute(self):
-        route_locations, departure_time_str, package_weight_threshold, application_data = self._params
+        locations_list = self._params[0].split(",")
+        departure_time_str = self._params[1] + " " + self._params[2]
+        package_weight_threshold = float(self._params[3])
 
-        departure_time = datetime.strptime(departure_time_str, "%d-%m-%Y %H:%M")
-        new_route = Route([Location(name) for name in route_locations], departure_time)
+        if len(locations_list) < 2:
+            raise ValueError(f"Ensure locations are at least two: {locations_list}.")
+
+        locations = [Location(Cities.from_string(name.strip())) for name in locations_list]
+
+        try:
+            departure_time = datetime.strptime(departure_time_str, "%d-%m-%Y %H:%M")
+        except ValueError:
+            raise ValueError("Invalid date format. Use 'DD-MM-YYYY HH:MM'.")
+
+        new_route = Route(locations=locations, departure_time=departure_time)
         route_distance = len(new_route)
+        self._app_data.routes.append(new_route)
 
         arrival_times = new_route.calculate_arrival_times()
         print(f"Route created with ID: {new_route.id}")
         print(f"Total route distance: {route_distance} km")
         print(f"Estimated arrival times at each stop:")
-        for location, arrival_time in zip(route_locations, arrival_times):
+        for location, arrival_time in zip(locations_list, arrival_times):
             print(f"{location}: {arrival_time}")
 
         suitable_truck = next(
-            (truck for truck in application_data.vehicles if
+            (truck for truck in self._app_data.vehicles if
              (truck.capacity >= package_weight_threshold and truck.truck_range >= route_distance
               and truck.track_location(datetime.now()) == 'Garage')
              ),
@@ -42,11 +55,11 @@ class CreateAndAssignRouteCommand:
 
         def can_add_package(package, total_assigned_weight):
             return (
-                    (package.start_location.name in route_locations) and (package.end_location.name in route_locations)
+                    (package.start_location.name in locations_list) and (package.end_location.name in locations_list)
                     and (total_assigned_weight + package.weight <= suitable_truck.capacity)
             )
 
-        for package in application_data.packages:
+        for package in self._app_data.packages:
             if can_add_package(package, total_assigned_weight):
                 new_route.add_package(package)
                 total_assigned_weight += package.weight
@@ -60,4 +73,4 @@ class CreateAndAssignRouteCommand:
         for package in new_route.packages:
             print(f"Package {package.id} assigned to the route.")
 
-        return f"Route {new_route.id} created and packages assigned successfully."
+        return f"Route {new_route.id} created and packages assigned successfully!"
