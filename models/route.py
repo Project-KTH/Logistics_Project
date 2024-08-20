@@ -42,10 +42,9 @@ class Route:
         self.capacity = truck.capacity
 
     def add_package(self, package):
-        if package.weight > self.capacity:
-            raise ValueError(
-                f"Cannot add package. Package weight {package.weight}kg exceeds available capacity {self.capacity}kg.")
-
+        if self.truck is None:
+            raise ValueError("Cannot add package. No truck has been assigned to this route.")
+        
         if package.weight > self.capacity:
             raise ValueError(
                 f"Cannot add package. Package weight {package.weight}kg exceeds available capacity {self.capacity}kg."
