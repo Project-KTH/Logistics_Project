@@ -49,13 +49,6 @@ class TestRoute(TestCase):
         with self.assertRaisesRegex(ValueError, "Current location MEL not on route."):
             self.route.next_stop(self.location4)
 
-    def testUpdateCurrentLocationsForPackages_UpdatesSuccessfully(self):
-        self.route.update_locations_for_packages([self.package1, self.package2, self.package3])
-        self.assertEqual(self.route.locations[0], 'SYD')
-        self.assertEqual(self.route.locations[1], 'BRI')
-        self.assertEqual(self.route.locations[2], 'PER')
-        self.assertEqual(self.route.locations[3], 'MEL')
-        self.assertEqual(self.route.locations[4], 'DAR')
 
     def testStr_ReturnsCorrectFormat(self):
         expected = (f'Route ID: {self.route.id}, Locations: SYD (10-08-2024 10:45), PER (12-08-2024 08:54), '

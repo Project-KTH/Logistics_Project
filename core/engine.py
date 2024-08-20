@@ -114,6 +114,8 @@ class Engine:
         viewsinglepackage <package_id> <contact_info>
         viewallroutes - No params; show all created routes.
         viewroutesinprogress - No params; current_time = Now
+        createandassignroute <location> <departure_time> <weight> 
+
                 """)
         elif self._role == 'user':
             print("""

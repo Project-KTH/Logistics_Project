@@ -12,7 +12,7 @@ class Route:
 
     def __init__(self, locations=None, departure_time=None):
         self._route_id = generate_id(existing_ids=self.id_list)
-        self.locations = locations if locations else []
+        self.locations = [Location(name) for name in locations] if locations else []
         if isinstance(departure_time, datetime):
             self.departure_time = departure_time
         else:
