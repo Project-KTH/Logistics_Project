@@ -30,8 +30,8 @@ class ApplicationDataTest(TestCase):
         self.vehicle1 = mock_vehicle("Truck1", 1000, 500)
         self.vehicle2 = mock_vehicle("Truck2", 1500, 800)
 
-        self.user1 = mock_user(1, "User1", "user1@example.com")
-        self.user2 = mock_user(2, "User2", "user2@example.com")
+        self.user1 = mock_user( "User1", "user1@example.com", "password12")
+        self.user2 = mock_user( "User2", "user2@example.com", "password12")
 
         self.application_data.packages = [self.package1, self.package2, self.package3, self.package4]
         self.application_data.routes = [self.route1, self.route2, self.route3, self.route4]

@@ -156,7 +156,7 @@ class Manager(User):
             if can_add_package(package, total_assigned_weight):
                 new_route.add_package(package)
                 total_assigned_weight += package.weight
-                print(f"Package {package.id} added to the route. Total assigned weight: {total_assigned_weight} kg.")
+                print(f"Packages {package.id} added to the route. Total assigned weight: {total_assigned_weight} kg.")
             else:
                 print(f"Package {package.id} cannot be added. Either exceeds truck capacity or locations not in route.")
 

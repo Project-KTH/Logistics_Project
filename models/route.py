@@ -46,6 +46,10 @@ class Route:
             raise ValueError(
                 f"Cannot add package. Package weight {package.weight}kg exceeds available capacity {self.capacity}kg.")
 
+        if package.weight > self.capacity:
+            raise ValueError(
+                f"Cannot add package. Package weight {package.weight}kg exceeds available capacity {self.capacity}kg."
+            )
         self.packages.append(package)
         self.capacity -= package.weight
         package.route = self

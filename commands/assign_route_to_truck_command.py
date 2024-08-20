@@ -19,7 +19,7 @@ class AssignRouteToTruckCommand:
             return f'Truck {truck_id} not found!'
 
         truck.assign_route(route)
-        route.assign_truck(truck) # assign truck and update capacity
+        route.assign_truck(truck)
 
         return f'Route {route_id} assigned to truck {truck_id} successfully.'
 

@@ -347,10 +347,9 @@ def mock_vehicle(name, capacity, truck_range, truck_id=None):
 
     return vehicle
 
-def mock_user(user_id, name, contact_info, role='basic'):
+def mock_user(name, contact_info, password, role='basic'):
     user = MagicMock(spec = User)
     user.name = name
-    user.id = user_id
     user.contact_info = contact_info
     user.role = role
 

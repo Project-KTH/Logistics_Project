@@ -1,5 +1,6 @@
 from commands.add_user_command import AddUserCommand
 from commands.assign_route_to_truck_command import AssignRouteToTruckCommand
+from commands.create_and_assign_route_command import CreateAndAssignRouteCommand
 from commands.create_manager_command import CreateManagerCommand
 from commands.create_package_command import CreatePackageCommand
 from commands.create_route_command import CreateRouteCommand
@@ -68,6 +69,8 @@ class CommandFactory:
             return self.create_with_art(ViewRoutesInProgress(params, self._app_data), "route")
         elif cmd.lower() == "viewallroutes":
             return self.create_with_art(ViewAllRoutes(params, self._app_data), "route")
+        elif cmd.lower() == "createandassignroute":
+            return self.create_with_art(CreateAndAssignRouteCommand(params, self._app_data), "route")
         else:
             raise ValueError(f'Invalid command name: {cmd}!')
 
