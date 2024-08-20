@@ -118,6 +118,6 @@ class Engine:
         elif self._role == 'user':
             print("""
     Available Commands for User:
-        orderpackage <start_location> <end_location> <weight> - Order a new package
+        createpackage <start_location> <end_location> <weight> <customer_info> - Create a new package
         trackpackage <package_id> - Track an existing package
                 """)
